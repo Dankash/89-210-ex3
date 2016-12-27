@@ -35,7 +35,6 @@ void TaxiCenter::assignCabToDriver() {
     }
 }
 
-
 list<Driver *> *TaxiCenter::getEmployees() const {
     return employees;
 }
