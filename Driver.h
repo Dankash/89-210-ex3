@@ -113,6 +113,9 @@ public:
  * @param cabId - set a cab id..
  */
     void setCabId(int cabId);
+
+    friend ostream &operator<<(ostream &os, const Driver &driver);
+    friend std::istream &operator>>(std::istream &input, Driver &driver);
 };
 
 

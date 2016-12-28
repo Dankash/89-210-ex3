@@ -66,3 +66,18 @@ void Driver::setCabId(int cabId) {
 double CalculatedFare() {
     return 0.0;
 }
+
+ostream &operator<<(ostream &os, const Driver &driver) {
+    os << driver.id << "," << driver.age << "," << driver.maritalStatus
+       << "," << driver.yearsOfExperience << "," << driver.averageSatisfaction
+       << "," << driver.cabId;
+    return os;
+}
+
+std::istream &operator>>(std::istream &input, Driver &driver) {
+    char dummy;
+    input >> driver.id >> dummy >> driver.age >> "," >> driver.maritalStatus
+            >> "," >> driver.yearsOfExperience >> "," >> driver.averageSatisfaction
+            >> "," >> driver.cabId;
+    return input;
+}

@@ -1,8 +1,8 @@
 #blumend2 204326755 gispana 305759383
 all: ex3
 
-ex3: main.o BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o
-	g++ main.o BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o
+ex3: main.o BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o
+	g++ main.o BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o
 
 main.o: main.cpp
 	g++ -c main.cpp
@@ -54,3 +54,15 @@ Trip.o: Trip.cpp
 
 Neighbors.o: Neighbors.cpp
 	g++ -c Neighbors.cpp
+
+Socket.o: Socket.cpp
+	g++ -c Socket.cpp
+
+Tcp.o: Tcp.cpp
+	g++ -c Tcp.cpp
+
+Udp.o: Udp.cpp
+	g++ -c Udp.cpp
+
+#Client.o: Client.cpp
+	#g++ -c Client.cpp
