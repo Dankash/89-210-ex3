@@ -77,7 +77,6 @@ int main() {
     int sent_bytes = sendto(sock, data, data_len, 0, (struct sockaddr *) &sin, sizeof(sin));
     if (sent_bytes < 0) {
         perror("error writing to socket");
-    }
 
     struct sockaddr_in from;
     unsigned int from_len = sizeof(struct sockaddr_in);

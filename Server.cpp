@@ -21,6 +21,7 @@
 #include <iostream>
 #include "Udp.h"
 #include <unistd.h>
+#include <boost/lexical_cast.hpp>
 using namespace std;
 
 
@@ -30,9 +31,12 @@ using namespace std;
  * taking details about driver in the input and creating new driver
  * @return new driver
  */
-Driver* inputDriver(char* buffer) {
+Driver* inputDriver(/*char* buffer*/) {
     Driver *driver = new Driver();
-    int id, age, yoe, cabId;
+
+    cin >> *driver;
+
+    /*int id, age, yoe, cabId;
     char dummy, marital;
     char* token;
     int i = 0;
@@ -60,7 +64,7 @@ Driver* inputDriver(char* buffer) {
         }
         i++;
         token = strtok(buffer, ",");
-    }
+    }*/
     return driver;
 }
 
@@ -89,11 +93,14 @@ Trip* inputTrip() {
  * taking details about cab in the input and creating new cab
  * @return new cab
  */
-Cab* inputCab() {
+Cab* inputCab(std::list<char*> &cabserialize) {
     Cab *cab;
     int id, type;
     char brand, color, dummy;
-    cin >> id >> dummy >> type >> dummy >> brand >> dummy >> color;
+    //cin >> id >> dummy >> type >> dummy >> brand >> dummy >> color;
+    //cin
+    string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(type) + "," + brand + color;
+    cabserialize.push_back(str);
     if (type == 1)
         cab = new StandardCab(id, type, brand, color);
     else
@@ -112,6 +119,7 @@ int main() {
     std::list<Point> obstacles;
     std::list<Driver*> drivers;
     std::list<Cab*> cabs;
+    std::list<char*> cabserialize;
     TaxiCenter center = TaxiCenter(&drivers, &cabs);
     Point point = Point();
     int option;
@@ -152,10 +160,10 @@ int main() {
             case 1:
                 udp.reciveData(buffer, sizeof(buffer));
                 Driver *driver;
-                driver = inputDriver(buffer);
-
-
+                driver = inputDriver(/*buffer*/);
+                drivers.push_back(driver);
                 center.assignCabToDriver();
+
                 break;
                 //creating new trip
             case 2:
@@ -163,7 +171,14 @@ int main() {
                 break;
                 //creating new cab
             case 3:
-                cabs.push_back(inputCab());
+                cabs.push_back(inputCab(cabserialize));
+                list<char*>::iterator serializeIt;
+                serializeIt = cabserialize.begin();
+                for(i = 0; i < cabserialize.size(); ++i) {
+                    strcpy(buffer, serializeIt);
+                    std::advance(serializeIt, 1);
+                }
+                udp.sendData(buffer);
                 break;
                 //printing location of a driver according to id
             case 4:
