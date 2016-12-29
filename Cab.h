@@ -124,6 +124,8 @@ public:
     void setType(int type);
 
 
+
+
 };
 
 #endif //ASS1_CAB_H
