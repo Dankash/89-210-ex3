@@ -68,6 +68,7 @@ Driver* inputDriver(/*char* buffer*/) {
     return driver;
 }
 
+
 /**
  * taking details about trip in the input and creating new trip
  * @return new trip
