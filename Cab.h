@@ -1,10 +1,9 @@
 #ifndef ASS1_CAB_H
 #define ASS1_CAB_H
-
 #include <iostream>
 #include "Location.h"
 #include "Trip.h"
-
+#include <stack>
 using namespace std;
 
 class Cab {
@@ -17,10 +16,9 @@ protected:
     double fee;
     Location location;
     Trip* trip;
-
+    stack<Point> path;
+    int timeOfStart;
     //friend class boost::serialization::access;
-
-
 public:
     /*template<class Archive>
     void serialize(Archive &ar, const unsigned int version)
@@ -52,7 +50,7 @@ public:
     /**
      * represents the drive of the cab.
      */
-    virtual void Drive() = 0;
+    virtual void Drive(Point newPoint) = 0;
     /**
      *
      * @return id of cab.
@@ -117,12 +115,13 @@ public:
      *
      * @return trip of the cab.
      */
-    Trip *getTrip() const;
+
     /**
      *
      * @param trip - set trip of cab.
      */
     void setTrip(Trip *trip);
+
     /**
      *
      * @return default object of cab.
@@ -139,7 +138,11 @@ public:
      */
     void setType(int type);
 
+    const stack<Point> &getPath() const;
 
+    void setPath(const stack<Point> &path);
+
+    Trip *getTrip() const;
 
 
 };

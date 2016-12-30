@@ -5,6 +5,6 @@ LuxuryCab::LuxuryCab(int id, int type, char brand, char color)
     setFee(2);
 }
 
-void LuxuryCab::Drive() {
-    location.setPoint(trip->getEndPoint());
+void LuxuryCab::Drive(Point newPoint) {
+    location.setPoint(newPoint);
 }

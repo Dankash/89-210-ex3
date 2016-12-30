@@ -133,6 +133,7 @@ int main() {
     Point point = Point();
     int option;
     std::queue<Trip*> tripQueue;
+    stack<Point> path;
     int driverId;
     Driver *driver;
     list<Driver*>::iterator it;
@@ -230,11 +231,35 @@ int main() {
                 }
             }
                 break;
+            case 9:
+                string locationSerialize;
+                it = drivers.begin();
+                //assign trip to driver
+                if (!tripQueue.empty()) {
+                    for (int i = 0; i < drivers.size(); ++i) {
+                        if ((*it)->getCab()->getTrip() == NULL && !tripQueue.empty()) {
+                            (*it)->getCab()->setTrip(tripQueue.front());
+                            tripQueue.pop();
+                        }
+                        std::advance(it, 1);
+                    }
+                } else {
+                    for (int i = 0; i < drivers.size(); ++i) {
+                        path = BFS::bfs(grid,(*(it))->getCab()->getTrip()->getStartPoint(), (*(it))->getCab()->getTrip()->getEndPoint());
+                        if ((*(it))->getCab()->getType() == 2) // luxury cab drives through 2 points each time
+                            (*it)->getCab()->Drive(path.top());
+                            (*it)->getCab()->Drive(path.top());
+                            (*it)->getCab()->setTrip(NULL);
+                            locationSerialize = boost::lexical_cast<string>((*(it))->getCabId()) + "," + boost::lexical_cast<string>((*it)->getCab()->getLocation().getPoint()) + "," + boost::lexical_cast<string>((*it)->getCab()->getLocation().getDistance());
+                            path.pop();
+                            std::advance(it, 1);
+                            udp.sendData(locationSerialize);
+                    }
+
+                }
         }
         cin>>option;
     }
-
-
 //
 //    usleep(5000);
     Udp udp2(1, 5554);

@@ -73,7 +73,15 @@ int Cab::getType() const {
 void Cab::setType(int type) {
     Cab::type = type;
 }
+const stack<Point> &Cab::getPath() const {
+    return path;
+}
 
+void Cab::setPath(const stack<Point> &path) {
+    Cab::path = path;
+}
+
+}
 
 
 

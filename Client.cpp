@@ -30,37 +30,45 @@ void load() {
     ia >> s;
     cout << s <<endl;
 }*/
-
-void cabsDeserialize(std::list<string> &cabserialize, std::list<Cab*> &cabs) {
-    Cab* cab;
-    char* token;
+void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
+    Location location;
+    char *token;
+    int cabId;
     int i = 0;
-    for (int j = 0; j < cabserialize.size(); ++j) {
-        token = strtok(cabserialize.front(), ",");
-        while (token != NULL) {
-            switch (i) {
-                case 1:
-                    cab->setId(atoi(token));
-                    break;
-                case 2:
-                    cab->setType(atoi(token));
-                    break;
-                case 3:
-                    cab->setBrand(token[0]);
-                    break;
-                case 4:
-                    cab->setColor(token[0]);
-                    break;
-            }
-            i++;
-            token = strtok(token, ",");
+    token = strtok(locationserialize, ",");
+    while (token != NULL) {
+        switch (i) {
+            case 1:
+                cabId = (atoi(token));
+                break;
+            case 2:
+                Point point;
+                point.SetX(token[0]);
+                point.SetY(token[1]);
+                location.setPoint(point);
+                break;
+            case 3:
+                location.setDistance(atoi(token));
+                break;
         }
-        cabs.push_back(cab);
-        cabserialize.pop_front();
+        location.setParent(NULL);
+        i++;
+        token = strtok(token, ",");
+
+    list<Cab *>::iterator cabItStart;
+    list<Cab *>::iterator cabItEnd;
+    cabItStart = cabs.begin();
+    cabItEnd = cabs.begin();
+    advance(cabItEnd, cabs.size() - 1);
+    for (i = 0; i < cabs.size(); ++i) {
+        Cab *cab = *(cabItStart);
+        if(cab->getId() == cabId){
+            cab->setLocation(location);
+        }
     }
 }
 
-void tripsDeserialize(std::list<string> &tripserialize, std::list<Cab*> &trips) {
+void cabsDeserialize(std::list<string> &cabserialize, std::list<Cab*> &cabs) {
     Cab* cab;
     char* token;
     int i = 0;
@@ -116,7 +124,7 @@ void assignCabsToDrivers(std::list<Driver*> &drivers, std::list<Cab*> &cabs) {
         }
 }
 
-void assignTripsToCabs(std::list<Cab*> &cabs, )
+
 
 int main(int argc, char *argv[]) {
     char dummy;

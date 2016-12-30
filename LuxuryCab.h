@@ -24,7 +24,7 @@ public:
 /**
  * driving car to his destination point
  */
-    void Drive();
+    void Drive(Point newPoint);
 };
 
 

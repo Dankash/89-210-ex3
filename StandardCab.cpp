@@ -7,6 +7,6 @@ StandardCab::StandardCab(int id, int type, char brand, char color)
 
 
 
-void StandardCab::Drive() {
-    location.setPoint(trip->getEndPoint());
+void StandardCab::Drive(Point newPoint) {
+    location.setPoint(newPoint);
 }
