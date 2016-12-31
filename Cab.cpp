@@ -89,7 +89,7 @@ void Cab::setTimeOfStart(int timeOfStart) {
     Cab::timeOfStart = timeOfStart;
 }
 
-}
+
 
 
 

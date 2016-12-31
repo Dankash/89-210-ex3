@@ -48,3 +48,27 @@ int Grid::getCol() {
 bool Grid::isInGrid(int i, int j) {
     return (i >= 0) && (i < row) && (j >= 0) && (j <= col);
 }
+
+void Grid::resetGrid() {
+    list<Point>::iterator it;
+    list<Point>::iterator itEnd;
+    it = obstacles.begin();
+    itEnd = obstacles.begin();
+    advance(itEnd, obstacles.size() - 1);
+    for (int i = 0; i < row; ++i) {
+        for (int j = 0; j < col; ++j) {
+            for (int k = 0; k < obstacles.size(); ++k) {
+                Point point = *(it);
+                if(point == locations[i][j].getPoint())
+                    locations[i][j].setDistance(-1);
+                else
+                    if(locations[i][j].getDistance() != -1)
+                        locations[i][j].setDistance(1000);
+                advance(it, 1);
+            }
+
+        }
+    }
+}
+
+

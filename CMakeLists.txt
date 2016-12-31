@@ -15,6 +15,6 @@ include_directories(${Boost_INCLUDE_DIR})
 
 add_executable(89-210-ex4_server Server.cpp ${SOURCE_FILES})
 add_executable(89-210-ex4_client Client.cpp ${SOURCE_FILES})
-#target_link_libraries(89-210-ex3 gtest gtest_main)
+#target_link_libraries(89-210-ex4 gtest gtest_main)
 target_link_libraries(89-210-ex4_server ${Boost_LIBRARIES})
 target_link_libraries(89-210-ex4_client ${Boost_LIBRARIES})

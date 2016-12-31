@@ -30,10 +30,11 @@ void load() {
     ia >> s;
     cout << s <<endl;
 }*/
-void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
+void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
     Location location;
     char *token;
     int cabId;
+    Point point;
     int i = 0;
     token = strtok(locationserialize, ",");
     while (token != NULL) {
@@ -42,7 +43,6 @@ void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
                 cabId = (atoi(token));
                 break;
             case 2:
-                Point point;
                 point.SetX(token[0]);
                 point.SetY(token[1]);
                 location.setPoint(point);
@@ -54,8 +54,7 @@ void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
         location.setParent(NULL);
         i++;
         token = strtok(token, ",");
-
-        list<Cab *>::iterator cabItStart;
+        list<Cab *>::iterator cabItStart;//update the matching cab's location
         list<Cab *>::iterator cabItEnd;
         cabItStart = cabs.begin();
         cabItEnd = cabs.begin();
@@ -65,10 +64,10 @@ void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
             if (cab->getId() == cabId) {
                 cab->setLocation(location);
             }
+            advance(cabItStart, 1);
         }
     }
 }
-
     void cabsDeserialize(char *buff, std::list<Cab *> &cabs) {
         Cab *cab;
         char *token;
@@ -135,20 +134,38 @@ void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
         char maritalStatus;
         std::cout << "Hello, from client" << std::endl;
         std::list<Cab *> cabs;
+        std::list<Driver *> drivers;
+        char locationserialize[100];
+        Driver *driver;
+        string str;
         cout << argv[1] << endl;
         Udp udp(0, atoi(argv[1]));
         udp.initialize();
-
-        cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
-        Driver *driver = new Driver(id, age, maritalStatus, yoe, cabId);
-        string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
-                     maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," + boost::lexical_cast<string>(cabId);
-        char buffer[1024];
-        udp.sendData(buffer);
-        udp.reciveData(buffer, sizeof(buffer));
-        cout << buffer << endl;
-
-        return 0;
+        char option[2];
+        udp.reciveData(option, 2);
+        while (option[0] != 7) {
+            switch (option[0]) {
+                case '1':
+                    cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
+                    driver = new Driver(id, age, maritalStatus, yoe, cabId);
+                    str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
+                                 maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," +
+                                 boost::lexical_cast<string>(cabId);
+                    char buffer[1024];
+                    udp.sendData(buffer);
+                    udp.reciveData(buffer, sizeof(buffer));
+                    cout << buffer << endl;
+                    cabsDeserialize(buffer, cabs);
+                    assignCabsToDrivers(drivers, cabs);
+                    break;
+                case '9':
+                    for (int i = 0; i < drivers.size(); ++i) {
+                        udp.reciveData(locationserialize, 100);
+                        locationsDeserialize(locationserialize, cabs);
+                    }
+            }
+            return 0;
+        }
     }
 /*
 int main() {

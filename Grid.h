@@ -70,6 +70,8 @@ public:
  * @return true if the points are equals, otherwise false.
  */
     bool isInGrid(int i, int j);
+
+    void resetGrid();
 };
 
 
