@@ -34,6 +34,7 @@
       <sourceFolder url="file://$MODULE_DIR$/Listener.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Listener.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Neighbors.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/Client.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/TransportationMap.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Location.h" isTestSource="false" />
