@@ -9,9 +9,14 @@
 #include <boost/archive/text_iarchive.hpp>
 #include <iostream>
 #include <fstream>
+#include "Udp.h"
+#include <unistd.h>
+#include "Driver.h"
+#include <boost/lexical_cast.hpp>
+
 using namespace std;
 
-void save() {
+/*void save() {
     ofstream file("archive.txt");
     boost::archive::text_oarchive oa(file);
     std::string s = "Hello World\n";
@@ -24,10 +29,32 @@ void load() {
     string s;
     ia >> s;
     cout << s <<endl;
+}*/
+
+int main(int argc, char *argv[]) {
+    char dummy;
+    int id, age, yoe, cabId;
+    char maritalStatus;
+    std::cout << "Hello, from client" << std::endl;
+
+    cout << argv[1] << endl;
+    Udp udp(0, atoi(argv[1]));
+    udp.initialize();
+
+    cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
+    Driver *driver = new Driver(id, age, maritalStatus, yoe, cabId);
+    string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
+                 maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," + boost::lexical_cast<string>(cabId);
+
+    char buffer[1024];
+    udp.sendData("hello");
+    udp.reciveData(buffer, sizeof(buffer));
+    cout << buffer << endl;
+
+
+    return 0;
 }
-
-
-
+/*
 int main() {
 
     const char* ip_address = "127.0.0.1";
@@ -65,4 +92,4 @@ int main() {
     close(sock);
 
     return 0;
-}
+}*/
