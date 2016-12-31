@@ -54,6 +54,8 @@ int main() {
     }
 
     cout << "The client sent: " << buffer << endl;
+    strcpy(buffer,"yanai the king!");
+
 
     int sent_bytes = sendto(sock, buffer, bytes, 0, (struct sockaddr *) &from, sizeof(from));
     if (sent_bytes < 0) {

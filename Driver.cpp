@@ -68,16 +68,17 @@ double CalculatedFare() {
 }
 
 ostream &operator<<(ostream &os, const Driver &driver) {
-    os << driver.id << "," << driver.age << "," << driver.maritalStatus
-       << "," << driver.yearsOfExperience << "," << driver.averageSatisfaction
-       << "," << driver.cabId;
+    char dummy;
+    os << driver.id << dummy << driver.age << dummy << driver.maritalStatus
+       << dummy << driver.yearsOfExperience << dummy << driver.averageSatisfaction
+       << dummy << driver.cabId;
     return os;
 }
 
 std::istream &operator>>(std::istream &input, Driver &driver) {
     char dummy;
-    input >> driver.id >> dummy >> driver.age >> "," >> driver.maritalStatus
-            >> "," >> driver.yearsOfExperience >> "," >> driver.averageSatisfaction
-            >> "," >> driver.cabId;
+    input >> driver.id >> dummy >> driver.age >> dummy >> driver.maritalStatus
+            >> dummy >> driver.yearsOfExperience >> dummy >> driver.averageSatisfaction
+            >> dummy >> driver.cabId;
     return input;
 }
