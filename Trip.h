@@ -14,7 +14,21 @@ private:
     int numberOfPassengers;
     double fare;
 
+    //friend class boost::serialization::access;
+
+
 public:
+    /*template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & rideId;
+        ar & totalMetersPassed;
+        ar & startPoint;
+        ar & endPoint;
+        ar & numberOfPassengers;
+        ar & fare;
+    }*/
+
     /**
  *
  * @param rideId - the id of the ride.

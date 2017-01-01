@@ -1,4 +1,3 @@
-
 #ifndef ASS1_CAB_H
 #define ASS1_CAB_H
 
@@ -18,7 +17,24 @@ protected:
     double fee;
     Location location;
     Trip* trip;
+
+    //friend class boost::serialization::access;
+
+
 public:
+    /*template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & id;
+        ar & kilometer;
+        ar & type;
+        ar & brand;
+        ar & color;
+        ar & fee;
+        ar & location;
+        ar & trip;
+    }*/
+
     /**
      *
      * @param id - id of cab.

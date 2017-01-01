@@ -18,7 +18,22 @@ private:
     double averageSatisfaction;
     int cabId;
     Cab* cab;
+    //friend class boost::serialization::access;
+
+
 public:
+    /*template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & id;
+        ar & age;
+        ar & maritalStatus;
+        ar & yearsOfExperience;
+        ar & averageSatisfaction;
+        ar & cabId;
+        ar & cab;
+    }*/
+
     /**
  * Constructor.
  * @param id

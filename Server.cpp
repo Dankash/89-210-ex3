@@ -22,21 +22,30 @@
 #include "Udp.h"
 #include <unistd.h>
 #include <boost/lexical_cast.hpp>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/tokenizer.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/iostreams/device/back_inserter.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 using namespace std;
-
-
-
 
 /**
  * taking details about driver in the input and creating new driver
  * @return new driver
  */
-Driver* inputDriver(/*char* buffer*/) {
+Driver* inputDriver(char* buffer) {
     Driver *driver = new Driver();
 
-    cin >> *driver;
-
-    /*int id, age, yoe, cabId;
+    int id, age, yoe, cabId;
     char dummy, marital;
     char* token;
     int i = 0;
@@ -64,7 +73,7 @@ Driver* inputDriver(/*char* buffer*/) {
         }
         i++;
         token = strtok(buffer, ",");
-    }*/
+    }
     return driver;
 }
 
@@ -93,12 +102,12 @@ Trip* inputTrip() {
  * taking details about cab in the input and creating new cab
  * @return new cab
  */
-Cab* inputCab(std::list<char*> &cabserialize) {
+Cab* inputCab(std::list<string> &cabserialize) {
     Cab *cab;
     int id, type;
     char brand, color, dummy;
-    //cin >> id >> dummy >> type >> dummy >> brand >> dummy >> color;
-    //cin
+    cin >> id >> dummy >> type >> dummy >> brand >> dummy >> color;
+
     string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(type) + "," + brand + color;
     cabserialize.push_back(str);
     if (type == 1)
@@ -119,7 +128,7 @@ int main() {
     std::list<Point> obstacles;
     std::list<Driver*> drivers;
     std::list<Cab*> cabs;
-    std::list<char*> cabserialize;
+    std::list<string> cabserialize;
     TaxiCenter center = TaxiCenter(&drivers, &cabs);
     Point point = Point();
     int option;
@@ -152,47 +161,57 @@ int main() {
     }
     //creating a grid
     Grid grid = Grid(locations, obstacles, gridSize[0], gridSize[1]);
+
+    /*boost::iostreams::basic_array_source<char> device(buffer, sizeof(buffer));
+    boost::iostreams::stream<boost::iostreams::basic_array_source<char> > s2(device);
+    boost::archive::binary_iarchive ia(s2);*/
     //menu's option of the user
     cin>>option;
     while ( option != 7 ) {
-        switch (option)  {
+        switch (option) {
             //creating a new driver
             case 1:
+                int cabId;
                 udp.reciveData(buffer, sizeof(buffer));
                 Driver *driver;
-                driver = inputDriver(/*buffer*/);
+                driver = inputDriver(buffer);
+                //ia >> driver;
                 drivers.push_back(driver);
                 center.assignCabToDriver();
+                udp.sendData(buffer2);
+//                cabId = driver->getCabId();
 
                 break;
                 //creating new trip
-            case 2:
+            case 2: {
                 tripQueue.push(inputTrip());
+            }
                 break;
                 //creating new cab
             case 3:
                 cabs.push_back(inputCab(cabserialize));
-                list<char*>::iterator serializeIt;
+                list<string>::iterator serializeIt;
                 serializeIt = cabserialize.begin();
-                for(i = 0; i < cabserialize.size(); ++i) {
-                    strcpy(buffer, serializeIt);
+                for (i = 0; i < cabserialize.size(); ++i) {
+                    strcpy(buffer2, (*(serializeIt)).c_str());
                     std::advance(serializeIt, 1);
                 }
-                udp.sendData(buffer);
+
                 break;
                 //printing location of a driver according to id
-            case 4:
+            case 4: {
                 cin >> driverId;
                 it = drivers.begin();
                 for (int i = 0; i < drivers.size(); ++i) {
                     if ((*it)->getId() == driverId) {
-                        cout<<(*it)->getCab()->getLocation().getPoint();
+                        cout << (*it)->getCab()->getLocation().getPoint();
                     }
                     std::advance(it, 1);
                 }
+            }
                 break;
                 //all the drivers are driving to their destination point
-            case 6:
+            case 6: {
                 it = drivers.begin();
                 //assign trip to driver
                 for (int i = 0; i < drivers.size(); ++i) {
@@ -209,6 +228,7 @@ int main() {
                     (*it)->getCab()->setTrip(NULL);
                     std::advance(it, 1);
                 }
+            }
                 break;
         }
         cin>>option;

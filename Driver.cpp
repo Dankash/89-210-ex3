@@ -3,8 +3,7 @@
 
 Driver::Driver(int id, int age, char maritalChar, int yearsOfExperience,
                int cabId) : id(id), age(age), maritalStatus(maritalChar), yearsOfExperience(yearsOfExperience),
-                           averageSatisfaction(0), cabId(cabId) {
-}
+                           averageSatisfaction(0), cabId(cabId) {}
 Driver::Driver() {}
 
 int Driver::getId() const {

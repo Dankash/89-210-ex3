@@ -1,9 +1,26 @@
-
 #ifndef ASS1_POINT_H
+#include <iostream>
+//#include <fstream>
+//#include <sstream>
+//#include <boost/archive/text_oarchive.hpp>
+//#include <boost/archive/text_iarchive.hpp>
+//#include <boost/tokenizer.hpp>
+//#include <boost/algorithm/string/predicate.hpp>
+//#include <boost/lexical_cast.hpp>
+//#include <boost/assign/list_of.hpp>
+//#include <boost/algorithm/string.hpp>
+//#include <boost/iostreams/device/back_inserter.hpp>
+//#include <boost/iostreams/stream.hpp>
+//#include <boost/archive/binary_oarchive.hpp>
+//#include <boost/archive/binary_iarchive.hpp>
+//#include <boost/serialization/export.hpp>
+//#include <ostream>
 #define ASS1_POINT_H
 
 
-#include <ostream>
+using namespace std;
+//using namespace boost::archive;
+//std::stringstream ss;
 /**
  * a point with x and y axis.
  */
@@ -12,7 +29,16 @@ private:
     int x;
     int y;
 
+    //friend class boost::serialization::access;
+
 public:
+    /*template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & x;
+        ar & y;
+    }*/
+
 /**
  * @param x_p - x axis.
  * @param y_p - y  axis.

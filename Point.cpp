@@ -1,12 +1,9 @@
 #include <iostream>
 #include "Point.h"
 
-Point::Point(int x_p, int y_p) {
-    x = x_p;
-    y = y_p;
-}
+Point::Point(int x_p, int y_p) : x(x_p), y(y_p) {}
 
-Point::Point() {}
+Point::Point() : x(0), y(0) {}
 
 int Point::GetX() const {
     return x;

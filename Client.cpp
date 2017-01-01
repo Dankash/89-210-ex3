@@ -31,6 +31,12 @@ void load() {
     cout << s <<endl;
 }*/
 
+void assignCabToDriver(Driver *driver, std::list<string> &cabserialize) {
+
+
+
+}
+
 int main(int argc, char *argv[]) {
     char dummy;
     int id, age, yoe, cabId;
