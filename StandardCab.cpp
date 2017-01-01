@@ -5,8 +5,8 @@ StandardCab::StandardCab(int id, int type, char brand, char color)
     setFee(1);
 }
 
-
-
 void StandardCab::Drive() {
     location.setPoint(trip->getEndPoint());
 }
+
+BOOST_CLASS_EXPORT(Cab)

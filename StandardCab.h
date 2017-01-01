@@ -5,7 +5,14 @@
  * Create Standard cab object.
  */
 class StandardCab: public Cab {
+
+    friend class boost::serialization::access;
 public:
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<Cab>(*this);
+    }
 /**
  * Constructor.
  * @param id
@@ -23,6 +30,7 @@ public:
  */
     void Drive();
 };
+
 
 
 #endif //ASS1_STANDARTCAB_H

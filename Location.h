@@ -12,7 +12,16 @@ private:
     Point point;
     int distance;
     Location* parent;
+    friend class boost::serialization::access;
+
 public:
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & point;
+        ar & distance;
+        ar & parent;
+    }
     Location();
     /**
  * set the location's params.

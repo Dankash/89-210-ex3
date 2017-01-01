@@ -16,26 +16,6 @@
 
 using namespace std;
 
-/*void save() {
-    ofstream file("archive.txt");
-    boost::archive::text_oarchive oa(file);
-    std::string s = "Hello World\n";
-    oa<<s;
-}
-
-void load() {
-    ifstream file("archive.txt");
-    boost::archive::text_iarchive ia(file);
-    string s;
-    ia >> s;
-    cout << s <<endl;
-}*/
-
-void assignCabToDriver(Driver *driver, std::list<string> &cabserialize) {
-
-
-
-}
 
 int main(int argc, char *argv[]) {
     char dummy;

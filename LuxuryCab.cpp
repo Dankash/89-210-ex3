@@ -8,3 +8,5 @@ LuxuryCab::LuxuryCab(int id, int type, char brand, char color)
 void LuxuryCab::Drive() {
     location.setPoint(trip->getEndPoint());
 }
+
+BOOST_CLASS_EXPORT(Cab)

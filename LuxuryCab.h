@@ -8,7 +8,13 @@
  * Create luxury cab object.
  */
 class LuxuryCab: public Cab {
+    friend class boost::serialization::access;
 public:
+    template<class Archive>
+    void serialize(Archive &ar, const unsigned int version)
+    {
+        ar & boost::serialization::base_object<Cab>(*this);
+    }
 /**
  * Contructor.
  * @param id

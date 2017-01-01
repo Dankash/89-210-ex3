@@ -17,13 +17,13 @@ ConnectGrid.o: ConnectGrid.cpp
 	g++ -c ConnectGrid.cpp
 
 Location.o: Location.cpp
-	g++ -c Location.cpp
+	g++ -c Location.cpp -lboost_serialization
 
 Point.o: Point.cpp
-	g++ -c Point.cpp
+	g++ -c Point.cpp -lboost_serialization
 
 Cab.o: Cab.cpp
-	g++ -c Cab.cpp
+	g++ -c Cab.cpp -lboost_serialization
 
 Driver.o: Driver.cpp
 	g++ -c Driver.cpp -lboost_serialization
@@ -32,7 +32,7 @@ Listener.o: Listener.cpp
 	g++ -c Listener.cpp
 
 LuxuryCab.o: LuxuryCab.cpp
-	g++ -c LuxuryCab.cpp
+	g++ -c LuxuryCab.cpp -lboost_serialization
 
 Notifier.o: Notifier.cpp
 	g++ -c Notifier.cpp
@@ -41,7 +41,7 @@ Passenger.o: Passenger.cpp
 	g++ -c Passenger.cpp
 
 StandardCab.o: StandardCab.cpp
-	g++ -c StandardCab.cpp
+	g++ -c StandardCab.cpp -lboost_serialization
 
 TaxiCente.o: TaxiCenter.cpp
 	g++ -c TaxiCenter.cpp
@@ -50,7 +50,7 @@ TransportationMap.o: TransportationMap.cpp
 	g++ -c TransportationMap.cpp
 
 Trip.o: Trip.cpp
-	g++ -c Trip.cpp
+	g++ -c Trip.cpp -lboost_serialization
 
 Neighbors.o: Neighbors.cpp
 	g++ -c Neighbors.cpp

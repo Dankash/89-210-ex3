@@ -18,11 +18,11 @@ protected:
     Location location;
     Trip* trip;
 
-    //friend class boost::serialization::access;
+    friend class boost::serialization::access;
 
 
 public:
-    /*template<class Archive>
+    template<class Archive>
     void serialize(Archive &ar, const unsigned int version)
     {
         ar & id;
@@ -33,7 +33,7 @@ public:
         ar & fee;
         ar & location;
         ar & trip;
-    }*/
+    }
 
     /**
      *
@@ -52,7 +52,7 @@ public:
     /**
      * represents the drive of the cab.
      */
-    virtual void Drive() = 0;
+    //virtual void Drive() = 0;
     /**
      *
      * @return id of cab.
@@ -143,5 +143,7 @@ public:
 
 
 };
+
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Cab)
 
 #endif //ASS1_CAB_H
