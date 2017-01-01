@@ -7,10 +7,14 @@ using namespace std;
 
 void ConnectGrid::connect(Grid &grid, Location* root, int row, int col) {
 
-    for(int i = 0; i < row; ++i) {
-        for (int j = 0; j < col ; ++j) {
-            grid.getLocations()[i][j].setDistance(1000);
-            grid.getLocations()[i][j].setParent(NULL);
+    grid.resetGrid();
+
+    for (int i = 0; i < grid.getRow(); ++i) {
+        for (int j = 0; j < grid.getCol(); ++j) {
+            if (grid.getLocations()[i][j] == *root) {
+                root = &(grid.getLocations()[i][j]);
+                break;
+            }
         }
     }
 
@@ -27,6 +31,8 @@ void ConnectGrid::connect(Grid &grid, Location* root, int row, int col) {
         if (!neighbors.empty())
             neighbors.clear();
         current = q.front();
+//        if (q.front()->getDistance() != -1 && q.front()->getDistance() != 0)
+//            current->setDistance(1000);
         q.pop();
         Neighbors::neighborsList(grid, *current, neighbors);
         if(neighbors.empty())

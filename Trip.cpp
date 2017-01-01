@@ -72,5 +72,11 @@ void Trip::setEndY(int y) {
 }
 
 
+int Trip::getTimeOfStart() const {
+    return timeOfStart;
+}
 
+void Trip::setTimeOfStart(int timeOfStart) {
+    Trip::timeOfStart = timeOfStart;
+}
 

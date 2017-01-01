@@ -12,6 +12,7 @@ private:
     Point startPoint;
     Point endPoint;
     int numberOfPassengers;
+    int timeOfStart;
     double fare;
 
     //friend class boost::serialization::access;
@@ -127,6 +128,10 @@ public:
  * @param y
  */
     void setEndY(int y);
+
+    int getTimeOfStart() const;
+
+    void setTimeOfStart(int timeOfStart);
 
 };
 

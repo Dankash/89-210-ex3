@@ -55,10 +55,12 @@ void Grid::resetGrid() {
     it = obstacles.begin();
     itEnd = obstacles.begin();
     advance(itEnd, obstacles.size() - 1);
+    Point point;
     for (int i = 0; i < row; ++i) {
         for (int j = 0; j < col; ++j) {
+            it = obstacles.begin();
             for (int k = 0; k < obstacles.size(); ++k) {
-                Point point = *(it);
+                point = *(it);
                 if(point == locations[i][j].getPoint())
                     locations[i][j].setDistance(-1);
                 else

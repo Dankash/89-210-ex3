@@ -14,8 +14,7 @@ std::stack<Point> BFS::bfs(Grid& grid, Point source, Point destination) {
             }
         }
     }
-    grid.resetGrid();
-    while (destLocation != NULL) {
+    while (destLocation->getPoint() != source) {
         path.push(destLocation->getPoint());
         destLocation = destLocation->getParent();
     }

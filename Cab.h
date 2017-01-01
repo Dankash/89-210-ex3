@@ -17,7 +17,6 @@ protected:
     Location location;
     Trip* trip;
     stack<Point> path;
-    int timeOfStart;
     //friend class boost::serialization::access;
 public:
     /*template<class Archive>
@@ -143,10 +142,6 @@ public:
     void setPath(const stack<Point> &path);
 
     Trip *getTrip() const;
-
-    int getTimeOfStart() const;
-
-    void setTimeOfStart(int timeOfStart);
 };
 
 #endif //ASS1_CAB_H

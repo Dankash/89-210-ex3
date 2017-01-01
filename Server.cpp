@@ -48,11 +48,10 @@ Driver* inputDriver(char* buffer) {
     int id, age, yoe, cabId;
     char dummy, marital;
     char* token;
-    int i = 0;
+    int i = 1;
 
-    token = strtok (buffer,",");
-
-    while (token!= NULL) {
+    token = strtok (buffer,",|");
+    while (token != NULL) {
         switch (i)
         {
             case 1:
@@ -62,7 +61,7 @@ Driver* inputDriver(char* buffer) {
                 driver->setAge(atoi(token));
                 break;
             case 3:
-                driver->setMaritalStatus(buffer[0]);
+                driver->setMaritalStatus(token[0]);
                 break;
             case 4:
                 driver->setYearsOfExperience(atoi(token));
@@ -72,7 +71,7 @@ Driver* inputDriver(char* buffer) {
                 break;
         }
         i++;
-        token = strtok(buffer, ",");
+        token = strtok(NULL, ",|");
     }
     return driver;
 }
@@ -85,9 +84,10 @@ Trip* inputTrip() {
     Trip *trip = new Trip();
     int id, xStart, yStart, xEnd, yEnd, numOfPassengers;
     double tariff;
+    int timeOfStart;
     char dummy;
     cin >> id >> dummy >> xStart >> dummy >> yStart >> dummy >> xEnd >> dummy >> yEnd >> dummy >>
-        numOfPassengers >> dummy >> tariff;
+        numOfPassengers >> dummy >> tariff >> dummy >> timeOfStart;
     trip->setRideId(id);
     trip->setStartX(xStart);
     trip->setStartY(yStart);
@@ -95,6 +95,7 @@ Trip* inputTrip() {
     trip->setEndY(yEnd);
     trip->setNumberOfPassengers(numOfPassengers);
     trip->setFare(tariff);
+    trip->setTimeOfStart(timeOfStart);
     return trip;
 }
 
@@ -107,8 +108,8 @@ Cab* inputCab(std::list<string> &cabserialize) {
     int id, type;
     char brand, color, dummy;
     cin >> id >> dummy >> type >> dummy >> brand >> dummy >> color;
-
-    string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(type) + "," + brand + color + "|";
+    string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(type) + "," + brand
+                 + "," + color + "|";
     cabserialize.push_back(str);
     if (type == 1)
         cab = new StandardCab(id, type, brand, color);
@@ -120,13 +121,18 @@ Cab* inputCab(std::list<string> &cabserialize) {
 int main() {
     std::cout << "Hello, from server" << std::endl;
 
-    Udp udp(1, 5555);
+    Udp udp(1, 5559);
     udp.initialize();
+    char b[1024];
+    udp.reciveData(b, sizeof(b));
+    cout << b << "\n";
     int currentTime = 0;
     int gridSize[2];
     int numOfObstacles;
     int i = 0;
+    int numOfDrivers; //num of drivers to create
     std::list<Point> obstacles;
+    char assignBuffer[7];
     std::list<Driver*> drivers;
     std::list<Cab*> cabs;
     std::list<string> cabserialize;
@@ -143,6 +149,7 @@ int main() {
     list<string>::iterator serializeIt;
     Driver *driver2;
     string locationSerialize;
+    Location* loc;
     //the grid input
     cin >> gridSize[0] >> gridSize[1];
     cin >> numOfObstacles;
@@ -174,12 +181,17 @@ int main() {
         switch (option[0]) {
             //creating a new driver
             case '1':
-                int cabId;
-                udp.reciveData(buffer, sizeof(buffer));
-                driver = inputDriver(buffer);
-                drivers.push_back(driver2);
-                center.assignCabToDriver();
-                udp.sendData(buffer2);
+                cin >> numOfDrivers;
+                while (numOfDrivers > 0) {
+
+                    int cabId;
+                    udp.reciveData(buffer, sizeof(buffer));
+                    driver2 = inputDriver(buffer);
+                    drivers.push_back(driver2);
+                    center.assignCabToDriver();
+                    --numOfDrivers;
+                    udp.sendData(buffer2);
+                }
 //                cabId = driver->getCabId();
                 break;
                 //creating new trip
@@ -232,8 +244,9 @@ int main() {
             case '9':
 
                 it = drivers.begin();
+               udp.reciveData(assignBuffer,sizeof(assignBuffer));
                 //assign trip to driver
-                if (!tripQueue.empty()) {
+                if (!tripQueue.empty() && strcmp(assignBuffer, "assign") == 0) {
                     for (int i = 0; i < drivers.size(); ++i) {
                         if ((*it)->getCab()->getTrip() == NULL && !tripQueue.empty()){
                             (*it)->getCab()->setTrip(tripQueue.front());
@@ -243,26 +256,29 @@ int main() {
                     }
                 } else {
                     for (int i = 0; i < drivers.size(); ++i) {
+                        loc = new Location((*(it))->getCab()->getTrip()->getStartPoint(), NULL);
+                        ConnectGrid::connect(grid, loc, grid.getRow(), grid.getCol());
                         path = BFS::bfs(grid,(*(it))->getCab()->getTrip()->getStartPoint(), (*(it))->getCab()->getTrip()->getEndPoint());
                         if(!path.empty()) {
-                            if ((*(it))->getCab()->getTimeOfStart() == currentTime) {
+                            if ((*(it))->getCab()->getTrip()->getTimeOfStart() == currentTime) {
                                 if ((*(it))->getCab()->getType() == 2) // luxury cab drives through 2 points each time
                                     (*it)->getCab()->Drive(path.top());
                                 (*it)->getCab()->Drive(path.top());
-                                (*it)->getCab()->setTrip(NULL);
                                 locationSerialize = boost::lexical_cast<string>((*(it))->getCabId()) + "," +
                                                     boost::lexical_cast<string>(
                                                             (*it)->getCab()->getLocation().getPoint()) +
                                                     "," + boost::lexical_cast<string>(
                                         (*it)->getCab()->getLocation().getDistance());
                                 path.pop();
-                                (*it)->getCab()->setTimeOfStart((*it)->getCab()->getTimeOfStart() + 1);
-                                std::advance(it, 1);
+                                (*it)->getCab()->getTrip()->setTimeOfStart((*it)->getCab()->getTrip()->getTimeOfStart() + 1);
+
 
                             }
                             udp.sendData(locationSerialize);
+                        } else {
+                            (*it)->getCab()->setTrip(NULL);
                         }
-
+                        std::advance(it, 1);
                     }
 
                 }
@@ -271,6 +287,7 @@ int main() {
                 break;
         }
         cin>>option;
+        udp.sendData(option);
     }
 //
 //    usleep(5000);
