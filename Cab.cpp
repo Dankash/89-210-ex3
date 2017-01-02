@@ -81,6 +81,14 @@ void Cab::setPath(const stack<Point> &path) {
     Cab::path = path;
 }
 
+int Cab::getTimeOfStart() const {
+    return timeOfStart;
+}
+
+void Cab::setTimeOfStart(int timeOfStart) {
+    Cab::timeOfStart = timeOfStart;
+}
+
 }
 
 

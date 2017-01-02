@@ -144,7 +144,9 @@ public:
 
     Trip *getTrip() const;
 
+    int getTimeOfStart() const;
 
+    void setTimeOfStart(int timeOfStart);
 };
 
 #endif //ASS1_CAB_H

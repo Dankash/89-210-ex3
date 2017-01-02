@@ -55,49 +55,53 @@ void locationsDeserialize(string locationserialize, std::list<Cab*> &cabs) {
         i++;
         token = strtok(token, ",");
 
-    list<Cab *>::iterator cabItStart;
-    list<Cab *>::iterator cabItEnd;
-    cabItStart = cabs.begin();
-    cabItEnd = cabs.begin();
-    advance(cabItEnd, cabs.size() - 1);
-    for (i = 0; i < cabs.size(); ++i) {
-        Cab *cab = *(cabItStart);
-        if(cab->getId() == cabId){
-            cab->setLocation(location);
-        }
-    }
-}
-
-void cabsDeserialize(std::list<string> &cabserialize, std::list<Cab*> &cabs) {
-    Cab* cab;
-    char* token;
-    int i = 0;
-    for (int j = 0; j < cabserialize.size(); ++j) {
-        token = strtok(cabserialize.front(), ",");
-        while (token != NULL) {
-            switch (i) {
-                case 1:
-                    cab->setId(atoi(token));
-                    break;
-                case 2:
-                    cab->setType(atoi(token));
-                    break;
-                case 3:
-                    cab->setBrand(token[0]);
-                    break;
-                case 4:
-                    cab->setColor(token[0]);
-                    break;
+        list<Cab *>::iterator cabItStart;
+        list<Cab *>::iterator cabItEnd;
+        cabItStart = cabs.begin();
+        cabItEnd = cabs.begin();
+        advance(cabItEnd, cabs.size() - 1);
+        for (i = 0; i < cabs.size(); ++i) {
+            Cab *cab = *(cabItStart);
+            if (cab->getId() == cabId) {
+                cab->setLocation(location);
             }
-            i++;
-            token = strtok(token, ",");
         }
-        cabs.push_back(cab);
-        cabserialize.pop_front();
     }
 }
 
-void assignCabsToDrivers(std::list<Driver*> &drivers, std::list<Cab*> &cabs) {
+    void cabsDeserialize(char *buff, std::list<Cab *> &cabs) {
+        Cab *cab;
+        char *token;
+        char *token2;
+        int i = 0;
+
+        token = strtok(buff, "|");
+        while (token != NULL) {
+            token2 = strtok(token, ",");
+            while (token2 != NULL) {
+                switch (i) {
+                    case 1:
+                        cab->setId(atoi(token));
+                        break;
+                    case 2:
+                        cab->setType(atoi(token));
+                        break;
+                    case 3:
+                        cab->setBrand(token[0]);
+                        break;
+                    case 4:
+                        cab->setColor(token[0]);
+                        break;
+                }
+                i++;
+                token2 = strtok(token, ",");
+            }
+            cabs.push_back(cab);
+            token = strtok(buff, "|");
+        }
+    }
+
+    void assignCabsToDrivers(std::list<Driver *> &drivers, std::list<Cab *> &cabs) {
         int i, j;
         list<Cab *>::iterator cabItStart;
         list<Cab *>::iterator cabItEnd;
@@ -116,38 +120,36 @@ void assignCabsToDrivers(std::list<Driver*> &drivers, std::list<Cab*> &cabs) {
                 if (cab->getId() == driver->getCabId()) {
                     driver->setCab(cab);
                 }
-                if(drItStart != drItEnd)
+                if (drItStart != drItEnd)
                     advance(drItStart, 1);
             }
-            if(cabItStart != cabItEnd)
+            if (cabItStart != cabItEnd)
                 advance(cabItStart, 1);
         }
-}
+    }
 
 
+    int main(int argc, char *argv[]) {
+        char dummy;
+        int id, age, yoe, cabId;
+        char maritalStatus;
+        std::cout << "Hello, from client" << std::endl;
+        std::list<Cab *> cabs;
+        cout << argv[1] << endl;
+        Udp udp(0, atoi(argv[1]));
+        udp.initialize();
 
-int main(int argc, char *argv[]) {
-    char dummy;
-    int id, age, yoe, cabId;
-    char maritalStatus;
-    std::cout << "Hello, from client" << std::endl;
-    std::list<Cab*> cabs;
-    cout << argv[1] << endl;
-    Udp udp(0, atoi(argv[1]));
-    udp.initialize();
+        cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
+        Driver *driver = new Driver(id, age, maritalStatus, yoe, cabId);
+        string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
+                     maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," + boost::lexical_cast<string>(cabId);
+        char buffer[1024];
+        udp.sendData(buffer);
+        udp.reciveData(buffer, sizeof(buffer));
+        cout << buffer << endl;
 
-    cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
-    Driver *driver = new Driver(id, age, maritalStatus, yoe, cabId);
-    string str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
-                 maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," + boost::lexical_cast<string>(cabId);
-    char buffer[1024];
-    udp.sendData("hello");
-    udp.reciveData(buffer, sizeof(buffer));
-    cout << buffer << endl;
-
-
-    return 0;
-}
+        return 0;
+    }
 /*
 int main() {
 
