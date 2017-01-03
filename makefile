@@ -1,11 +1,11 @@
 #blumend2 204326755 gispana 305759383
 all: 89-210-ex4
 
-89-210-ex4: BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o Client.o
-	g++ BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o Client.o -lboost_serialization
+89-210-ex4: BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o Server.o
+	g++ BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o Server.o -lboost_serialization
 
-#Server.o: Server.cpp
-	#g++ -c Server.cpp -lboost_serialization
+Server.o: Server.cpp
+	g++ -c Server.cpp -lboost_serialization
 
 BFS.o: BFS.cpp
 	g++ -c BFS.cpp
@@ -64,5 +64,5 @@ Tcp.o: Tcp.cpp
 Udp.o: Udp.cpp
 	g++ -c Udp.cpp
 
-Client.o: Client.cpp
-	g++ -c Client.cpp -lboost_serialization
+#Client.o: Client.cpp
+	#g++ -c Client.cpp -lboost_serialization

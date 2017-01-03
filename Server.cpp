@@ -167,25 +167,20 @@ int main() {
     //creating a grid
     Grid grid = Grid(locations, obstacles, gridSize[0], gridSize[1]);
 
-    /*boost::iostreams::basic_array_source<char> device(buffer, sizeof(buffer));
-    boost::iostreams::stream<boost::iostreams::basic_array_source<char> > s2(device);
-    boost::archive::binary_iarchive ia(s2);*/
     //menu's option of the user
     cin>>option;
-    udp.sendData(option[0]+"");
-    while ( option[0] != 7 ) {
+    udp.sendData(option);
+    while ( option[0] != '7' ) {
         switch (option[0]) {
             //creating a new driver
             case '1':
                 int cabId;
                 udp.reciveData(buffer, sizeof(buffer));
                 driver = inputDriver(buffer);
-                //ia >> driver;
                 drivers.push_back(driver2);
                 center.assignCabToDriver();
                 udp.sendData(buffer2);
 //                cabId = driver->getCabId();
-
                 break;
                 //creating new trip
             case '2': {

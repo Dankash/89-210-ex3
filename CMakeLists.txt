@@ -1,15 +1,18 @@
 cmake_minimum_required(VERSION 3.3)
 project(89-210-ex4)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Werror")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 #add_subdirectory(lib/googletest-master)
 #add_subdirectory(sockets)
 #include_directories(lib/googletest-master/googletest/include)
 #include_directories(lib/googletest-master/googlemock/include)
+set(core_sockets Socket.cpp Udp.cpp)
+add_library(sockets ${core_sockets})
 set(SOURCE_FILES Point.cpp Point.h Location.cpp Location.h Grid.cpp Grid.h ConnectGrid.cpp ConnectGrid.h Neighbors.cpp Neighbors.h BFS.cpp BFS.h Cab.cpp Cab.h Trip.cpp Trip.h Driver.cpp Driver.h Passenger.cpp Passenger.h Listener.cpp Listener.h Notifier.cpp Notifier.h TaxiCenter.cpp TaxiCenter.h TransportationMap.cpp TransportationMap.h StandardCab.cpp StandardCab.h LuxuryCab.cpp LuxuryCab.h Socket.cpp Socket.h Tcp.cpp Tcp.h Udp.cpp)
 
 set(BOOST_ROOT CACHE PATH "/usr/include/boost/")
-find_package(Boost 1.5.4.0 COMPONENTS serialization system)
+find_package(Boost 1.58.0 COMPONENTS serialization system)
 add_library(core ${core_SRCS})
 include_directories(${Boost_INCLUDE_DIR})
 

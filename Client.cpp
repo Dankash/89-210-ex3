@@ -142,8 +142,11 @@ void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
         Udp udp(0, atoi(argv[1]));
         udp.initialize();
         char option[2];
-        udp.reciveData(option, 2);
-        while (option[0] != 7) {
+        char buffer[1024];
+        cout << "before recieving" << endl;
+        udp.reciveData(option, sizeof(option));
+        cout << "after recieving: " << option <<endl;
+        while (option[0] != '7') {
             switch (option[0]) {
                 case '1':
                     cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
@@ -151,7 +154,6 @@ void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
                     str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
                                  maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," +
                                  boost::lexical_cast<string>(cabId);
-                    char buffer[1024];
                     udp.sendData(buffer);
                     udp.reciveData(buffer, sizeof(buffer));
                     cout << buffer << endl;
@@ -163,9 +165,13 @@ void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
                         udp.reciveData(locationserialize, 100);
                         locationsDeserialize(locationserialize, cabs);
                     }
+                default:
+                    break;
             }
-            return 0;
+            udp.reciveData(option, 2);
+
         }
+        return 0;
     }
 /*
 int main() {
