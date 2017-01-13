@@ -3,10 +3,12 @@
 #include "StandardCab.h"
 
 Cab::Cab(int id, int type, char brand, char color) : id(id),
-          type(type), brand(brand),color(color),location(Location(Point(0,0), NULL)), kilometer(0),
-            trip(NULL) {}
+                                                     type(type), brand(brand),color(color),location(Location(Point(0,0), NULL)), kilometer(0),
+                                                     trip(NULL) {}
 
-Cab::Cab() {
+Cab::Cab() : id(0), type(0), brand(' '),color(' '),
+             location(Location(Point(-1,-1), NULL)), kilometer(0),
+             trip(NULL) {
 
 }
 

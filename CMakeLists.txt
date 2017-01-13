@@ -9,7 +9,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 #include_directories(lib/googletest-master/googlemock/include)
 set(core_sockets Socket.cpp Udp.cpp)
 add_library(sockets ${core_sockets})
-set(SOURCE_FILES Server.cpp Point.cpp Point.h Location.cpp Location.h Grid.cpp Grid.h ConnectGrid.cpp ConnectGrid.h Neighbors.cpp Neighbors.h BFS.cpp BFS.h Cab.cpp Cab.h Trip.cpp Trip.h Driver.cpp Driver.h Passenger.cpp Passenger.h Listener.cpp Listener.h Notifier.cpp Notifier.h TaxiCenter.cpp TaxiCenter.h TransportationMap.cpp TransportationMap.h StandardCab.cpp StandardCab.h LuxuryCab.cpp LuxuryCab.h Socket.cpp Socket.h Tcp.cpp Tcp.h Udp.cpp)
+set(SOURCE_FILES mainServer.cpp Point.cpp Point.h Location.cpp Location.h Grid.cpp Grid.h ConnectGrid.cpp ConnectGrid.h Neighbors.cpp Neighbors.h BFS.cpp BFS.h Cab.cpp Cab.h Trip.cpp Trip.h Driver.cpp Driver.h Passenger.cpp Passenger.h Listener.cpp Listener.h Notifier.cpp Notifier.h TaxiCenter.cpp TaxiCenter.h TransportationMap.cpp TransportationMap.h StandardCab.cpp StandardCab.h LuxuryCab.cpp LuxuryCab.h Socket.cpp Socket.h Tcp.cpp Tcp.h Udp.cpp Server.cpp Server.h)
 
 set(BOOST_ROOT CACHE PATH "/usr/include/boost/")
 find_package(Boost 1.58.0 COMPONENTS serialization system)
