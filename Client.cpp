@@ -12,24 +12,17 @@
 #include "Udp.h"
 #include <unistd.h>
 #include "Driver.h"
+#include "StandardCab.h"
+#include "LuxuryCab.h"
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
 
-/*void save() {
-    ofstream file("archive.txt");
-    boost::archive::text_oarchive oa(file);
-    std::string s = "Hello World\n";
-    oa<<s;
-}
-
-void load() {
-    ifstream file("archive.txt");
-    boost::archive::text_iarchive ia(file);
-    string s;
-    ia >> s;
-    cout << s <<endl;
-}*/
+/**
+ *
+ * @param locationserialize - the serialized location.
+ * @param cabs - list of cabs.
+ */
 void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
     Location location;
     char *token;
@@ -71,11 +64,22 @@ void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
         advance(cabItStart, 1);
     }
 }
+/**
+ * desrialized cab and push it into cabs list.
+ * @param buff - the serializes cab.
+ * @param cabs - the list of the cabs.
+ */
 void cabsDeserialize(char *buff, std::list<Cab *> &cabs) {
-    Cab *cab;
+    int id;
+    int  type;
+    char brand;
+    char color;
+    //StandardCab *c;
+    LuxuryCab* d;
     char *token;
     char *token2;
     int i = 1;
+    Cab* cab;
 
     token = strtok(buff, "|");
     while (token != NULL) {
@@ -83,26 +87,41 @@ void cabsDeserialize(char *buff, std::list<Cab *> &cabs) {
         while (token2 != NULL) {
             switch (i) {
                 case 1:
-                    cab->setId(atoi(token2));
+                    id = atoi(token2);
                     break;
                 case 2:
-                    cab->setType(atoi(token2));
+                    type = atoi(token2);
                     break;
                 case 3:
-                    cab->setBrand(token2[0]);
+                    brand = token2[0];
                     break;
                 case 4:
-                    cab->setColor(token2[0]);
+                    color = token2[0];
                     break;
             }
             i++;
             token2 = strtok(NULL, ",");
         }
-        cabs.push_back(cab);
         token = strtok(NULL, "|");
     }
-}
 
+    if (type == 1) {
+        StandardCab *c = new StandardCab(id, type, brand, color);
+        cab = (Cab*) c;
+        cabs.push_back(cab);
+    } else {
+        d = new LuxuryCab(id, type, brand, color);
+        cab = (Cab*) d;
+        cabs.push_back(cab);
+    }
+
+
+}
+/**
+ * assign cabs to matched drivers.
+ * @param drivers - list of drivers.
+ * @param cabs - list of cabs.
+ */
 void assignCabsToDrivers(std::list<Driver *> &drivers, std::list<Cab *> &cabs) {
     int i, j;
     list<Cab *>::iterator cabItStart;
@@ -130,27 +149,28 @@ void assignCabsToDrivers(std::list<Driver *> &drivers, std::list<Cab *> &cabs) {
     }
 }
 
-
+/**
+ *
+ * @param argc - number of arguments.
+ * @param argv -  the arguments.
+ * @return runs the program and return  0.
+ */
 int main(int argc, char *argv[]) {
     char dummy;
     int id, age, yoe, cabId;
     char maritalStatus;
     int case9Counter = 0;//the first time of case 9 is diffrent
-    std::cout << "Hello, from client" << std::endl;
     std::list<Cab *> cabs;
     std::list<Driver *> drivers;
     char locationserialize[100];
+    int clientDescriptor;
     Driver *driver;
     string str;
-    cout << argv[1] << endl;
-    Udp udp(0, atoi(argv[1]));
-    udp.initialize();
-    udp.sendData("connected");
+    Tcp tcp = Tcp(0, atoi(argv[2]));
+    tcp.initialize();
     char option[2];
     char buffer[1024];
-    cout << "before recieving" << endl;
-    udp.reciveData(option, sizeof(option));
-    cout << "after recieving: " << option <<endl;
+    tcp.receiveData(option, sizeof(option), clientDescriptor);
     while (option[0] != '7') {
         switch (option[0]) {
             case '1':
@@ -160,9 +180,8 @@ int main(int argc, char *argv[]) {
                 str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +
                       maritalStatus + "," + boost::lexical_cast<string>(yoe) + "," +
                       boost::lexical_cast<string>(cabId) + "|";
-                udp.sendData(str);
-                udp.reciveData(buffer, sizeof(buffer));
-                cout << buffer << endl;
+                tcp.sendData(str, clientDescriptor);
+                tcp.receiveData(buffer, sizeof(buffer), clientDescriptor);
                 cabsDeserialize(buffer, cabs);
                 assignCabsToDrivers(drivers, cabs);
                 break;
@@ -170,12 +189,12 @@ int main(int argc, char *argv[]) {
                 break;
             case '9':
                 if(case9Counter == 0)
-                    udp.sendData("assign");
+                    tcp.sendData("assign", clientDescriptor);
                 else
-                    udp.sendData("dont");
+                    tcp.sendData("dont", clientDescriptor);
                 for (int i = 0; i < drivers.size(); ++i) {
                     if (case9Counter != 0) {
-                        udp.reciveData(locationserialize, 100);
+                        tcp.receiveData(locationserialize, 100, clientDescriptor);
                         locationsDeserialize(locationserialize, cabs);
                     }
                     case9Counter++;
@@ -183,46 +202,8 @@ int main(int argc, char *argv[]) {
             default:
                 break;
         }
-        udp.reciveData(option, sizeof(option));
+        tcp.receiveData(option, sizeof(option), clientDescriptor);
 
     }
     return 0;
 }
-/*
-int main() {
-
-    const char* ip_address = "127.0.0.1";
-    const int port_no = 5555;
-
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
-        perror("error creating socket");
-    }
-
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = inet_addr(ip_address);
-    sin.sin_port = htons(port_no);
-
-    char data[] = "hello";
-    int data_len = sizeof(data);
-
-    int sent_bytes = sendto(sock, data, data_len, 0, (struct sockaddr *) &sin, sizeof(sin));
-    if (sent_bytes < 0) {
-        perror("error writing to socket");
-
-    struct sockaddr_in from;
-    unsigned int from_len = sizeof(struct sockaddr_in);
-    char buffer[4096];
-    int bytes = recvfrom(sock, buffer, sizeof(buffer), 0, (struct sockaddr *) &from, &from_len);
-    if (bytes < 0) {
-        perror("error reading from socket");
-    }
-
-    cout << "The server sent: " << buffer << endl;
-
-    close(sock);
-
-    return 0;
-}*/
