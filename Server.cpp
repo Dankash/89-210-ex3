@@ -295,6 +295,7 @@ int main(int argc, char *argv[]) {
                         }
                         std::advance(it, 1);
                     }
+                    
                 } else {
                     for (int i = 0; i < drivers.size(); ++i) {
                         loc = new Location((*(it))->getCab()->getTrip()->getStartPoint(), NULL);
