@@ -18,7 +18,7 @@ public:
  * @param source - source point.
  * @param destination - destination point.
  */
-    static std::stack<Point> bfs(Grid& grid, Point source, Point destination);
+    static std::stack<Point> bfs(Grid* grid, Point source, Point destination);
 };
 
 

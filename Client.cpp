@@ -14,6 +14,7 @@
 #include "Driver.h"
 #include "StandardCab.h"
 #include "LuxuryCab.h"
+#include "Tcp.h"
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
@@ -25,44 +26,53 @@ using namespace std;
  */
 void locationsDeserialize(char *locationserialize, std::list<Cab*> &cabs) {
     Location location;
-    char *token;
+    char* token1;
+    char *token2;
     int cabId;
     Point point;
     Cab *cab;
     int i = 1;
-    token = strtok(locationserialize, ",");
-    while (token != NULL) {
-        switch (i) {
-            case 1:
-                cabId = (atoi(token));
-                break;
-            case 2:
-                point.SetX(token[1] - '0');
-                break;
-            case 3:
-                point.SetY(token[0] - '0');
-                location.setPoint(point);
-                break;
-            case 4:
-                location.setDistance(atoi(token));
-                break;
+    token1 = strtok(locationserialize, "|");
+    while (token1 != NULL) {
+        i = 1;
+        token2 = strtok(token1, ",");
+        while (token2 != NULL) {
+            switch (i) {
+                case 1:
+                    cabId = (atoi(token2));
+                    break;
+                case 2:
+                    point.SetX(token2[1] - '0');
+                    break;
+                case 3:
+                    point.SetY(token2[0] - '0');
+                    location.setPoint(point);
+                    break;
+                case 4:
+                    location.setDistance(atoi(token2));
+                    break;
+            }
+            i++;
+            token2 = strtok(NULL, ",");
         }
-        i++;
-        token = strtok(NULL, ",");
-    }
-    location.setParent(NULL);
-    list<Cab *>::iterator cabItStart;//update the matching cab's location
-    list<Cab *>::iterator cabItEnd;
-    cabItStart = cabs.begin();
-    cabItEnd = cabs.begin();
-    advance(cabItEnd, cabs.size() - 1);
-    for (i = 0; i < cabs.size(); ++i) {
-        cab = *(cabItStart);
-        if (cab->getId() == cabId) {
-            cab->setLocation(location);
+        token1 = strtok(NULL, "|");
+
+        location.setParent(NULL);
+        list<Cab *>::iterator cabItStart;//update the matching cab's location
+        list<Cab *>::iterator cabItEnd;
+        cabItStart = cabs.begin();
+        cabItEnd = cabs.begin();
+        advance(cabItEnd, cabs.size() - 1);
+        for (i = 0; i < cabs.size(); ++i) {
+            cab = *(cabItStart);
+            if (cab->getId() == cabId) {
+                cab->setLocation(location);
+            }
+            advance(cabItStart, 1);
         }
-        advance(cabItStart, 1);
     }
+
+
 }
 /**
  * desrialized cab and push it into cabs list.
@@ -188,10 +198,10 @@ int main(int argc, char *argv[]) {
             case '2': case9Counter = 0;
                 break;
             case '9':
-                if(case9Counter == 0)
-                    tcp.sendData("assign", clientDescriptor);
+                /*if(case9Counter == 0) ////////////////////////////////////////////
+                    tcp.sendData("assign", clientDescriptor); ///////////////////////////////
                 else
-                    tcp.sendData("dont", clientDescriptor);
+                    tcp.sendData("dont", clientDescriptor);*/ ////////////////////////////////
                 for (int i = 0; i < drivers.size(); ++i) {
                     if (case9Counter != 0) {
                         tcp.receiveData(locationserialize, 100, clientDescriptor);

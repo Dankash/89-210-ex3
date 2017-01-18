@@ -37,8 +37,48 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
+#include <tgmath.h>
+
 using namespace std;
 char option[2];
+int locationTripsFlag = 0;
+bool sendingFlag = false;
+//bool bfsFlag = false;
+
+class ClientData  {
+public:
+    TaxiCenter* taxiCenter;
+    list<Driver*> *drivers;
+    Tcp* socket;
+    int clientDescriptor;
+    char cabSerialized[4096];
+    string *locationSerialize;
+    ClientData(Tcp* msocket,TaxiCenter* mtaxiCenter, list<Driver*> *mdrivers, char *mcabSerialized, int mclientDescriptor, string *mlocationSerialize) {
+        taxiCenter = mtaxiCenter;
+        drivers = mdrivers;
+        socket = msocket;
+        strcpy(cabSerialized, mcabSerialized);
+        clientDescriptor = mclientDescriptor;
+        locationSerialize = mlocationSerialize;
+    }
+};
+
+class TripData {
+public:
+    Location* location;
+    stack<Point> *path;
+    Grid* grid;
+    //list<Driver*>::iterator *it;
+    Driver *driver;
+    TripData(Grid *newGrid, Location* newLocation, stack<Point> *newPath, Driver* newIt)  {
+        location =  newLocation;
+        path = newPath;
+        //it = newIt;
+        driver = newIt;
+        grid = newGrid;
+    }
+};
+
 
 /**
  * taking details about driver in the input and creating new driver
@@ -122,27 +162,40 @@ Cab* inputCab(std::list<string> &cabserialize) {
 }
 
 
-// char* buffer, int size, int clientDescriptor
+void* ConnectAndBFS(void* element) {
+    TripData* tripData = (TripData*) element;
+    Trip *trip = tripData->driver->getCab()->getTrip();
 
-void distributeOption (Socket* tcp, char* option, list <int> clientSockets) {
-    list <int>::iterator itStart;
-    list <int>::iterator itEnd;
-    itStart = clientSockets.begin();
-    itEnd = clientSockets.end();
-    while (itStart != itEnd){
-        (*tcp).sendData(option, (*(itStart)));
-        std::advance(itStart, 1);
-    }
+    ConnectGrid::connect(tripData->grid, tripData->location, tripData->grid->getRow(), tripData->grid->getCol());
+    tripData->driver->getCab()->setTrip(trip);
+    *(tripData->path) = BFS::bfs(tripData->grid ,tripData->driver->getCab()->getTrip()->getStartPoint(), tripData->driver->getCab()->getTrip()->getEndPoint());
+    //bfsFlag = true;
+    pthread_exit(element);
 }
 
+
+// char* buffer, int size, int clientDescriptor
+
+void distributeOption (Socket* tcp, bool &sendingFlag, list <int> clientSockets) {
+    list<int>::iterator itStart;
+    list<int>::iterator itEnd;
+    itStart = clientSockets.begin();
+    itEnd = clientSockets.end();
+    if (sendingFlag) {
+        while (itStart != itEnd) {
+            (*tcp).sendData(option, (*(itStart)));
+            std::advance(itStart, 1);
+        }
+    }
+}
 
 void* ConnectClient(void* element) {
     ClientData* clientData = (ClientData*) element;
     int cabId;
     char buffer[4096];
     Driver* driver2;
-    pthread_t thread;
-
+    sendingFlag = true;
+    clientData->socket->sendData("1", clientData->clientDescriptor);
     clientData->socket->receiveData(buffer, sizeof(buffer), clientData->clientDescriptor);
     driver2 = inputDriver(buffer);
     clientData->drivers->push_back(driver2);
@@ -151,11 +204,13 @@ void* ConnectClient(void* element) {
 
     while  (option != "7") {
 
-        if (option == "9") {
-
+        if (option == "9" && locationTripsFlag == 1) {
+            clientData->socket->sendData(*(clientData->locationSerialize), clientData->clientDescriptor);
         }
     }
+    pthread_exit(element);
 }
+
 
 /**
  *
@@ -213,13 +268,10 @@ int main(int argc, char *argv[]) {
         }
     }
     //creating a grid
-    Grid grid = Grid(locations, obstacles, gridSize[0], gridSize[1]);
-
-    clientDescriptor = tcp.acceptOneClient();
+    Grid* grid = new Grid(locations, obstacles, gridSize[0], gridSize[1]);
     //menu's option of the user
     cin>>option;
-    //tcp.sendData(option, clientDescriptor);
-    distributeOption(&tcp, option, clientSockets);
+
     while ( option[0] != '7' ) {
         switch (option[0]) {
             //creating a new driver
@@ -229,11 +281,12 @@ int main(int argc, char *argv[]) {
                 {
                     pthread_t thread;
                     clientDescriptor = tcp.acceptOneClient();
-                    ClientData* clientData = new ClientData(&tcp, &center, &drivers, buffer2, clientDescriptor);
+                    clientSockets.push_back(clientDescriptor);
+                    ClientData* clientData = new ClientData(&tcp, &center, &drivers, buffer2, clientDescriptor, &locationSerialize);
                     pthread_create(&thread, NULL, ConnectClient, clientData);
-                    //threads.push_back(thread);
                 }
-//                cabId = driver->getCabId();
+
+                //sendingFlag = true;
                 break;
                 //creating new trip
             case '2': {
@@ -283,80 +336,68 @@ int main(int argc, char *argv[]) {
 
                 break;
             case '9':
-
+                locationTripsFlag = 0;
                 it = drivers.begin();
-               tcp.receiveData(assignBuffer,sizeof(assignBuffer), clientDescriptor);
                 //assign trip to driver
                 if (!tripQueue.empty() /*&& strcmp(assignBuffer, "assign") == 0*/) {
                     for (int i = 0; i < drivers.size(); ++i) {
-                        if ((*it)->getCab()->getTrip() == NULL && !tripQueue.empty()){
+                        if ((*it)->getCab()->getTrip() == NULL && !tripQueue.empty() && (*it)->getCab()->getLocation().getPoint() == tripQueue.front()->getStartPoint()){
                             (*it)->getCab()->setTrip(tripQueue.front());
                             tripQueue.pop();
                         }
                         std::advance(it, 1);
                     }
                     
-                } else {
+                } else if ((*(it))->getCab()->getTrip() != NULL) { /////////////////////////////////////////////// before: else
                     for (int i = 0; i < drivers.size(); ++i) {
+                        pthread_t threadTrip;
                         loc = new Location((*(it))->getCab()->getTrip()->getStartPoint(), NULL);
-                        ConnectGrid::connect(grid, loc, grid.getRow(), grid.getCol());
-                        path = BFS::bfs(grid,(*(it))->getCab()->getTrip()->getStartPoint(), (*(it))->getCab()->getTrip()->getEndPoint());
-                        if(!path.empty()) {
+                        TripData* tripData = new TripData(grid, loc, &path, *(it));
+                        pthread_create(&threadTrip, NULL, ConnectAndBFS, tripData);
+
+                        pthread_join(threadTrip, NULL);
+
+                        if(!tripData->path->empty()) {
                             if ((*(it))->getCab()->getTrip()->getTimeOfStart() == currentTime) {
                                 if ((*(it))->getCab()->getType() == 2 && path.size() > 1) { // luxury cab drives through 2 points each time
                                     (*it)->getCab()->Drive(path.top());
                                     (*(it))->getCab()->getTrip()->setStartPoint(path.top());
-                                    path.pop();
+                                    tripData->path->pop();
                                 }
                                 (*it)->getCab()->Drive(path.top());
 
                                 (*(it))->getCab()->getTrip()->setStartPoint(path.top());
-                                path.pop();
+                                tripData->path->pop();
 
-                                locationSerialize = boost::lexical_cast<string>((*(it))->getCabId()) + "," +
+                                locationSerialize += boost::lexical_cast<string>((*(it))->getCabId()) + "," +
                                                     boost::lexical_cast<string>(
                                                             (*it)->getCab()->getLocation().getPoint()) +
                                                     "," + boost::lexical_cast<string>(
-                                        (*it)->getCab()->getLocation().getDistance());
+                                        (*it)->getCab()->getLocation().getDistance()) + "|";
                                 (*it)->getCab()->getTrip()->setTimeOfStart((*it)->getCab()->getTrip()->getTimeOfStart() + 1);
-                                if(path.empty())
+                                if(tripData->path->empty())
                                     (*it)->getCab()->setTrip(NULL);
 
                             }
-                            tcp.sendData(locationSerialize, clientDescriptor);
+
                         } else {
                             (*it)->getCab()->setTrip(NULL);
                         }
                         std::advance(it, 1);
                     }
-
+                    locationTripsFlag = 1;
                 }
                 currentTime++;
 
                 break;
         }
         cin>>option;
-        distributeOption(&tcp, option, clientSockets);
+        if (sendingFlag == true)
+        distributeOption(&tcp, sendingFlag, clientSockets);
     }
-
 
     // support more than one client?
     return 0;
 }
 
 
-class ClientData  {
-public:
-    TaxiCenter* taxiCenter;
-    list<Driver*> *drivers;
-    Tcp* socket;
-    int clientDescriptor;
-    char cabSerialized[4096];
-    ClientData(Tcp* msocket,TaxiCenter* mtaxiCenter, list<Driver*> *mdrivers, char *mcabSerialized, int mclientDescriptor) {
-        taxiCenter = mtaxiCenter;
-        drivers = mdrivers;
-        socket = msocket;
-        strcpy(cabSerialized, mcabSerialized);
-        clientDescriptor = mclientDescriptor;
-    }
-};

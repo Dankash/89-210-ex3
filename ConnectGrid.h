@@ -17,7 +17,7 @@ public:
  * @param row - number of rows.
  * @param col - number of columns.
  */
-    static void connect(Grid &grid, Location* root, int row, int col);
+    static void connect(Grid *grid, Location* root, int row, int col);
 };
 
 

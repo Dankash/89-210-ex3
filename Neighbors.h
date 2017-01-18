@@ -21,7 +21,7 @@ public:
  * @param neighbors - list which will contain a list with
  * the location's neighbors.
  */
-    static void neighborsList(Grid &grid, Location current, list<Location *> &neighbors);
+    static void neighborsList(Grid *grid, Location current, list<Location *> &neighbors);
 };
 
 #endif //ASS1_NEIGHBORS_H
