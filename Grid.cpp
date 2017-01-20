@@ -7,6 +7,44 @@ Grid::Grid(Location **locations, list<Point> obstacles, int row, int col) {
     setObstacles(obstacles);
     setRow(row);
     setCol(col);
+
+
+    for(int i = 0; i < row; ++i) {
+        for (int j = 0; j < col ; ++j) {
+
+            std::list<Location*> neighbors;
+            Location *neighbor;
+
+            if (Grid::isInGrid(i - 1, j)) {
+                neighbor = &locations[i - 1][j];
+                if (neighbor->getDistance() == 10000) {
+                    neighbors.push_back(neighbor);
+                }
+            }
+
+            if (Grid::isInGrid(i, j + 1)) {
+                neighbor = &locations[i][j + 1];
+                if (neighbor->getDistance() == 10000)
+                    neighbors.push_back(neighbor);
+            }
+
+            if (Grid::isInGrid(i + 1, j)) {
+                neighbor = &locations[i + 1][j];
+                if (neighbor->getDistance() == 10000)
+                    neighbors.push_back(neighbor);
+            }
+
+            if (Grid::isInGrid(i, j - 1)) {
+                neighbor = &locations[i][j - 1];
+                if (neighbor->getDistance() == 10000)
+                    neighbors.push_back(neighbor);
+            }
+
+            locations[i][j].setNeighbors(neighbors);
+
+        }
+    }
+
 }
 
 Grid::~Grid() {
@@ -59,22 +97,19 @@ void Grid::resetGrid() {
     for (int i = 0; i < row; ++i) {
         for (int j = 0; j < col; ++j) {
             it = obstacles.begin();
-            cout << "rG:: " << i << "," << j <<" ";
             for (int k = 0; k < obstacles.size(); ++k) {
                 point = *(it);
                 if(point == locations[i][j].getPoint())
                     locations[i][j].setDistance(-1);
                 else
                     if(locations[i][j].getDistance() != -1)
-                        locations[i][j].setDistance(1000);
+                        locations[i][j].setDistance(10000);
                 advance(it, 1);
             }
 
         }
-        cout << endl;
     }
 
-    cout<< "after reset grid loop $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
 }
 
 

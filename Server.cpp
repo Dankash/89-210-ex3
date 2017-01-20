@@ -270,7 +270,7 @@ int main(int argc, char *argv[]) {
     for (int j = 0; j < gridSize[0]; ++j) {
         for (int i = 0; i < gridSize[1]; ++i) {
             locations[j][i].setParent(NULL);
-            locations[j][i].setDistance(1000);
+            locations[j][i].setDistance(10000);
             locations[j][i].setPoint(Point(j,i));
         }
     }

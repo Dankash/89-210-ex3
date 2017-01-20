@@ -6,13 +6,13 @@ using namespace std;
  * set the location's params.
  */
 Location::Location(): point(0,0) {
-    distance = 1000;
+    distance = 10000;
     Location::parent = NULL;
 }
 
 Location::Location(const Point &point, Location *location) : point(point), parent(location) {
     setPoint(point);
-    setDistance(1000);
+    setDistance(10000);
     setParent(location);
 }
 
@@ -48,6 +48,14 @@ void Location::setParent(Location *parent) {
 
 bool Location::operator==(const Location& l1) const {
     return (distance == l1.distance) && (point==l1.point); // should we add locations comparison??
+}
+
+const list<Location *> &Location::getNeighbors() const {
+    return neighbors;
+}
+
+void Location::setNeighbors(const list<Location *> &neighbors) {
+    Location::neighbors = neighbors;
 }
 
 

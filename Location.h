@@ -1,7 +1,11 @@
 #ifndef ASS1_LOCATION_H
 #define ASS1_LOCATION_H
 
+#include <list>
 #include "Point.h"
+
+using namespace std;
+
 /**
  * represents the Location inside the grid,
  * includes point, distance from source and pointer to
@@ -12,6 +16,7 @@ private:
     Point point;
     int distance;
     Location* parent;
+    list<Location*> neighbors;
 public:
     Location();
     /**
@@ -58,6 +63,10 @@ public:
  * @return true if equals, else false.
  */
     bool operator==(const Location &l1) const;
+
+    const list<Location *> &getNeighbors() const;
+
+    void setNeighbors(const list<Location *> &neighbors);
 };
 
 

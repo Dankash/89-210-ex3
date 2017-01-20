@@ -11,26 +11,26 @@ void Neighbors::neighborsList(Grid* grid, Location current, list<Location*> &nei
 
                 if (grid->isInGrid(i - 1, j)) {
                     neighbor = &grid->getLocations()[i - 1][j];
-                    if (neighbor->getDistance() == 1000) {
+                    if (neighbor->getDistance() == 10000) {
                         neighbors.push_back(neighbor);
                     }
                 }
 
                 if (grid->isInGrid(i, j + 1)) {
                     neighbor = &grid->getLocations()[i][j + 1];
-                    if (neighbor->getDistance() == 1000)
+                    if (neighbor->getDistance() == 10000)
                         neighbors.push_back(neighbor);
                 }
 
                 if (grid->isInGrid(i + 1, j)) {
                     neighbor = &grid->getLocations()[i + 1][j];
-                    if (neighbor->getDistance() == 1000)
+                    if (neighbor->getDistance() == 10000)
                         neighbors.push_back(neighbor);
                 }
 
                 if (grid->isInGrid(i, j - 1)) {
                     neighbor = &grid->getLocations()[i][j - 1];
-                    if (neighbor->getDistance() == 1000)
+                    if (neighbor->getDistance() == 10000)
                         neighbors.push_back(neighbor);
                 }
 

@@ -7,20 +7,18 @@ using namespace std;
 
 void ConnectGrid::connect(Grid *grid, Location* root, int row, int col) {
 
+    int i,j;
+    int neighborsSize;
     grid->resetGrid();
 
-    for (int i = 0; i < grid->getRow(); ++i) {
-        for (int j = 0; j < grid->getCol(); ++j) {
-            cout << "cG:: " << i << "," << j <<" ";
+    for (i = 0; i < grid->getRow(); ++i) {
+        for (j = 0; j < grid->getCol(); ++j) {
             if (grid->getLocations()[i][j] == *root) {
                 root = &(grid->getLocations()[i][j]);
                 break;
             }
         }
-        cout <<endl;
     }
-
-    cout<< "after first loop connect grid $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
 
     Location* current;
     queue <Location*> q;
@@ -35,24 +33,32 @@ void ConnectGrid::connect(Grid *grid, Location* root, int row, int col) {
         if (!neighbors.empty())
             neighbors.clear();
         current = q.front();
-//        if (q.front()->getDistance() != -1 && q.front()->getDistance() != 0)
-//            current->setDistance(1000);
+
         q.pop();
-        Neighbors::neighborsList(grid, *current, neighbors);
+        //Neighbors::neighborsList(grid, *current, neighbors);
+        neighbors = current->getNeighbors();
+        //cout<< "after neighbors: " << endl;
+
         if(neighbors.empty())
             continue;
         it = neighbors.begin();
         end = neighbors.begin();
         std::advance(end, neighbors.size()-1);
 
-        for (int i = 0; i < neighbors.size(); ++i) {
-            if ((*it)->getDistance() == 1000) {
+        neighborsSize = (int) neighbors.size();
+        for (i = 0; i < neighborsSize; i++) {
+
+            //cout << "point " << ((*it))->getPoint() << endl;
+            //cout << "neighborsSize = " << neighborsSize << ", connect grid second loop: " << i << endl;
+
+            if ((*it)->getDistance() == 10000) {
                 (*it)->setDistance(current->getDistance() + 1);
                 (*it)->setParent(current);
                 q.push((*it));
             }
-            if(it != end)
-                std::advance(it, 1);
+
+            std::advance(it, 1);
         }
     }
+
 }
