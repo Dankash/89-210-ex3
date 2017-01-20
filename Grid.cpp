@@ -59,6 +59,7 @@ void Grid::resetGrid() {
     for (int i = 0; i < row; ++i) {
         for (int j = 0; j < col; ++j) {
             it = obstacles.begin();
+            cout << "rG:: " << i << "," << j <<" ";
             for (int k = 0; k < obstacles.size(); ++k) {
                 point = *(it);
                 if(point == locations[i][j].getPoint())
@@ -70,7 +71,10 @@ void Grid::resetGrid() {
             }
 
         }
+        cout << endl;
     }
+
+    cout<< "after reset grid loop $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
 }
 
 

@@ -202,13 +202,13 @@ int main(int argc, char *argv[]) {
                     tcp.sendData("assign", clientDescriptor); ///////////////////////////////
                 else
                     tcp.sendData("dont", clientDescriptor);*/ ////////////////////////////////
-                for (int i = 0; i < drivers.size(); ++i) {
-                    if (case9Counter != 0) {
-                        tcp.receiveData(locationserialize, 100, clientDescriptor);
-                        locationsDeserialize(locationserialize, cabs);
-                    }
-                    case9Counter++;
+                if (case9Counter != 0) {
+                    tcp.sendData("hi", 0);
+                    tcp.receiveData(locationserialize, 100, clientDescriptor);
+                    locationsDeserialize(locationserialize, cabs);
                 }
+                case9Counter++;
+
             default:
                 break;
         }

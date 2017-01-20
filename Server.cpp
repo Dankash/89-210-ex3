@@ -190,22 +190,29 @@ void distributeOption (Socket* tcp, bool &sendingFlag, list <int> clientSockets)
 }
 
 void* ConnectClient(void* element) {
+    pthread_mutex_t driversMutex = PTHREAD_MUTEX_INITIALIZER;
     ClientData* clientData = (ClientData*) element;
-    int cabId;
+    //int cabId;
     char buffer[4096];
     Driver* driver2;
     sendingFlag = true;
     clientData->socket->sendData("1", clientData->clientDescriptor);
     clientData->socket->receiveData(buffer, sizeof(buffer), clientData->clientDescriptor);
+    pthread_mutex_lock(&driversMutex);
     driver2 = inputDriver(buffer);
     clientData->drivers->push_back(driver2);
     clientData->taxiCenter->assignCabToDriver();
+    pthread_mutex_unlock(&driversMutex);
     clientData->socket->sendData(clientData->cabSerialized, clientData->clientDescriptor);
 
-    while  (option != "7") {
+    while  (option[0] != '7') {
 
-        if (option == "9" && locationTripsFlag == 1) {
+        if (option[0] == '9' && locationTripsFlag == 1) {
+            clientData->socket->sendData("9", clientData->clientDescriptor);
+            clientData->socket->receiveData(buffer, sizeof(buffer), clientData->clientDescriptor);
             clientData->socket->sendData(*(clientData->locationSerialize), clientData->clientDescriptor);
+
+            //cout << "sent sirluzim ";
         }
     }
     pthread_exit(element);
@@ -232,7 +239,7 @@ int main(int argc, char *argv[]) {
     std::list<string> cabserialize;
     TaxiCenter center = TaxiCenter(&drivers, &cabs);
     Point point = Point();
-    std::queue<Trip*> tripQueue;
+    std::list<Trip*> tripQueue;
     stack<Point> path;
     int driverId;
     Driver *driver;
@@ -290,7 +297,7 @@ int main(int argc, char *argv[]) {
                 break;
                 //creating new trip
             case '2': {
-                tripQueue.push(inputTrip());
+                tripQueue.push_front(inputTrip());
             }
                 break;
                 //creating new cab
@@ -340,14 +347,15 @@ int main(int argc, char *argv[]) {
                 it = drivers.begin();
                 //assign trip to driver
                 if (!tripQueue.empty() /*&& strcmp(assignBuffer, "assign") == 0*/) {
+                    distributeOption(&tcp, sendingFlag, clientSockets);
                     for (int i = 0; i < drivers.size(); ++i) {
                         if ((*it)->getCab()->getTrip() == NULL && !tripQueue.empty() && (*it)->getCab()->getLocation().getPoint() == tripQueue.front()->getStartPoint()){
                             (*it)->getCab()->setTrip(tripQueue.front());
-                            tripQueue.pop();
+                            tripQueue.pop_front();
                         }
                         std::advance(it, 1);
                     }
-                    
+
                 } else if ((*(it))->getCab()->getTrip() != NULL) { /////////////////////////////////////////////// before: else
                     for (int i = 0; i < drivers.size(); ++i) {
                         pthread_t threadTrip;
@@ -368,7 +376,7 @@ int main(int argc, char *argv[]) {
 
                                 (*(it))->getCab()->getTrip()->setStartPoint(path.top());
                                 tripData->path->pop();
-
+                                locationSerialize = "";
                                 locationSerialize += boost::lexical_cast<string>((*(it))->getCabId()) + "," +
                                                     boost::lexical_cast<string>(
                                                             (*it)->getCab()->getLocation().getPoint()) +
@@ -392,12 +400,11 @@ int main(int argc, char *argv[]) {
                 break;
         }
         cin>>option;
-        if (sendingFlag == true)
+        if (sendingFlag == true && option[0] != '9')
         distributeOption(&tcp, sendingFlag, clientSockets);
     }
 
     // support more than one client?
     return 0;
 }
-
 

@@ -11,12 +11,16 @@ void ConnectGrid::connect(Grid *grid, Location* root, int row, int col) {
 
     for (int i = 0; i < grid->getRow(); ++i) {
         for (int j = 0; j < grid->getCol(); ++j) {
+            cout << "cG:: " << i << "," << j <<" ";
             if (grid->getLocations()[i][j] == *root) {
                 root = &(grid->getLocations()[i][j]);
                 break;
             }
         }
+        cout <<endl;
     }
+
+    cout<< "after first loop connect grid $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
 
     Location* current;
     queue <Location*> q;

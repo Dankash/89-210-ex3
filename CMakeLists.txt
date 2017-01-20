@@ -21,9 +21,11 @@ include_directories(${Boost_INCLUDE_DIR})
 
 add_executable(89-210-ex4_server ${SOURCE_FILES_SERVER})
 add_executable(89-210-ex4_client ${SOURCE_FILES_CLIENT})
+add_executable(89-210-ex4_client2 ${SOURCE_FILES_CLIENT})
 #add_executable(89-210-ex4_client Client.cpp ${SOURCE_FILES})
 #target_link_libraries(89-210-ex4 gtest gtest_main)
 target_link_libraries(89-210-ex4_server ${Boost_LIBRARIES})
 target_link_libraries(89-210-ex4_client ${Boost_LIBRARIES})
+target_link_libraries(89-210-ex4_client2 ${Boost_LIBRARIES})
 
 #target_link_libraries(89-210-ex4_server ${CMAKE_THREAD_LIBS_INIT})
