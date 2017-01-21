@@ -44,7 +44,10 @@ char option[2];
 int locationTripsFlag = 0;
 bool sendingFlag = false;
 //bool bfsFlag = false;
-
+/**
+ * Client data.
+ * to send and recieve data.
+ */
 class ClientData  {
 public:
     TaxiCenter* taxiCenter;
@@ -62,7 +65,10 @@ public:
         locationSerialize = mlocationSerialize;
     }
 };
-
+/**
+ * Trip data.
+ * to send trip info to clients.
+ */
 class TripData {
 public:
     Location* location;
@@ -161,7 +167,11 @@ Cab* inputCab(std::list<string> &cabserialize) {
     return cab;
 }
 
-
+/**
+ * Connect Grid and Calculate BFS for each client.
+ * @param element - TripData.
+ * @return .
+ */
 void* ConnectAndBFS(void* element) {
     TripData* tripData = (TripData*) element;
     Trip *trip = tripData->driver->getCab()->getTrip();
@@ -175,12 +185,18 @@ void* ConnectAndBFS(void* element) {
 
 
 // char* buffer, int size, int clientDescriptor
-
+/**
+ * Send the option input to all clients via tcp.
+ * @param tcp.
+ * @param sendingFlag  - determine if we should send the option.
+ * @param clientSockets - client descriptors list.
+ */
 void distributeOption (Socket* tcp, bool &sendingFlag, list <int> clientSockets) {
     list<int>::iterator itStart;
     list<int>::iterator itEnd;
     itStart = clientSockets.begin();
     itEnd = clientSockets.end();
+    sleep(1);
     if (sendingFlag) {
         while (itStart != itEnd) {
             (*tcp).sendData(option, (*(itStart)));
@@ -188,7 +204,11 @@ void distributeOption (Socket* tcp, bool &sendingFlag, list <int> clientSockets)
         }
     }
 }
-
+/**
+ *
+ * @param element
+ * @return - sending and receiving data between server and clients.
+ */
 void* ConnectClient(void* element) {
     pthread_mutex_t driversMutex = PTHREAD_MUTEX_INITIALIZER;
     ClientData* clientData = (ClientData*) element;
@@ -230,6 +250,7 @@ int main(int argc, char *argv[]) {
     int gridSize[2];
     int numOfObstacles;
     int i = 0;
+    pthread_t thread;
     int numOfDrivers; //num of drivers to create
     std::list<Point> obstacles;
     list <int> clientSockets;
@@ -286,11 +307,11 @@ int main(int argc, char *argv[]) {
                 cin >> numOfDrivers;
                 for (j = 0; j < numOfDrivers; ++j)
                 {
-                    pthread_t thread;
                     clientDescriptor = tcp.acceptOneClient();
                     clientSockets.push_back(clientDescriptor);
                     ClientData* clientData = new ClientData(&tcp, &center, &drivers, buffer2, clientDescriptor, &locationSerialize);
                     pthread_create(&thread, NULL, ConnectClient, clientData);
+
                 }
 
                 //sendingFlag = true;
@@ -401,10 +422,13 @@ int main(int argc, char *argv[]) {
         }
         cin>>option;
         if (sendingFlag == true && option[0] != '9')
-        distributeOption(&tcp, sendingFlag, clientSockets);
+            distributeOption(&tcp, sendingFlag, clientSockets);
     }
 
     // support more than one client?
+    //sleep (1);
+    pthread_join(thread, NULL);
+    //sleep(1);
     return 0;
 }
 

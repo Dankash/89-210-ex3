@@ -215,5 +215,6 @@ int main(int argc, char *argv[]) {
         tcp.receiveData(option, sizeof(option), clientDescriptor);
 
     }
+    //pthread_exit(0);
     return 0;
 }
