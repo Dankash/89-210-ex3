@@ -254,37 +254,72 @@ int main(int argc, char *argv[]) {
     pthread_t thread;
     int numOfDrivers; //num of drivers to create
     std::list<Point> obstacles;
-    list <int> clientSockets;
+    list<int> clientSockets;
     char assignBuffer[7];
-    std::list<Driver*> drivers;
-    std::list<Cab*> cabs;
+    std::list<Driver *> drivers;
+    std::list<Cab *> cabs;
     std::list<string> cabserialize;
     TaxiCenter center = TaxiCenter(&drivers, &cabs);
     Point point = Point();
-    std::list<Trip*> tripQueue;
+    std::list<Trip *> tripQueue;
     stack<Point> path;
     int driverId;
     Driver *driver;
-    list<Driver*>::iterator it;
+    list<Driver *>::iterator it;
     //list <pthread_t> threads;
     char buffer[1024];
     char buffer2[1024];
     list<string>::iterator serializeIt;
     Driver *driver2;
     string locationSerialize;
-    Location* loc;
+    Location *loc;
     int clientDescriptor = 0;
     int j;
-    //the grid input
-    cin >> gridSize[0] >> gridSize[1];
-    cin >> numOfObstacles;
-    //creating obstacles if the num of them is bigger than 0.
-    if(numOfObstacles > 0) {
-        for (i = 0; i < numOfObstacles; i++) {
-            cin >> point;
-            obstacles.push_back(point);
+    bool checker = false;
+    bool obstacklesChecker = false;
+
+    while(!obstacklesChecker) {
+        //the grid input
+        while (!checker) {
+            cin >> gridSize[0] >> gridSize[1];
+            if (gridSize[0] > 0 && gridSize[1] > 0 && !cin.fail())
+                checker = true;
+            else
+                cout << "-1" << endl;
+        }
+
+        checker = false;
+        while (!checker) {
+            cin >> numOfObstacles;
+            if (numOfObstacles > 0 && !cin.fail())
+                checker = true;
+            else
+                cout << "-1" << endl;
+        }
+
+        checker = false;
+        obstacklesChecker  = true;
+        //creating obstacles if the num of them is bigger than 0.
+        if (numOfObstacles > 0) {
+            for (i = 0; i < numOfObstacles; i++) {
+                while (!checker) {
+                    cin >> point;
+                    if (point.GetX() > 0 && point.GetY() > 0 && !cin.fail())
+                        checker = true;
+                    else {
+                        cout << "-1" << endl;
+                        checker = false;
+                        obstacklesChecker = false;
+                        break;
+                    }
+                }
+                if (!obstacklesChecker)
+                    break;
+                obstacles.push_back(point);
+            }
         }
     }
+
     //creating locations for building a grid
     Location** locations = new Location*[gridSize[0]];
     for(int i = 0; i < gridSize[0]; ++i)
@@ -419,6 +454,9 @@ int main(int argc, char *argv[]) {
                 }
                 currentTime++;
 
+                break;
+            default:
+                cout << "-1" << endl;
                 break;
         }
         cin>>option;
