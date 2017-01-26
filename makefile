@@ -45,9 +45,6 @@ Notifier.o: Notifier.cpp Notifier.h
 Passenger.o: Passenger.cpp Passenger.h
 	g++ -std=c++0x -c -pthread Passenger.cpp
 
-StandardCab.o: StandardCab.cpp StandardCab.h
-	g++ -std=c++0x -c -pthread StandardCab.cpp
-
 TaxiCenter.o: TaxiCenter.cpp TaxiCenter.h
 	g++ -std=c++0x -c -pthread TaxiCenter.cpp
 
