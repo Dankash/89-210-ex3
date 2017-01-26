@@ -148,7 +148,6 @@ Trip* inputTrip() {
     trip->setTimeOfStart(timeOfStart);
     return trip;
 }
-
 /**
  * taking details about cab in the input and creating new cab
  * @return new cab
