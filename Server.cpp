@@ -304,7 +304,7 @@ int main(int argc, char *argv[]) {
             for (i = 0; i < numOfObstacles; i++) {
                 while (!checker) {
                     cin >> point;
-                    if (point.GetX() > 0 && point.GetY() > 0 && !cin.fail())
+                    if (point.GetX() > 0 && point.GetY() > 0 && point.GetX() < gridSize[0] && point.GetY() < gridSize[1] && !cin.fail())
                         checker = true;
                     else {
                         cout << "-1" << endl;
