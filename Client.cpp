@@ -16,6 +16,7 @@
 #include "LuxuryCab.h"
 #include "Tcp.h"
 #include <boost/lexical_cast.hpp>
+#include <cstdlib>
 
 using namespace std;
 
@@ -158,6 +159,20 @@ void assignCabsToDrivers(std::list<Driver *> &drivers, std::list<Cab *> &cabs) {
             advance(cabItStart, 1);
     }
 }
+/**
+ * check if the input is number and positive.
+ * @param s - the input string.
+ * @return true if the input is valid.
+ */
+bool isNumberAndPositive(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) {
+        ++it;
+    }
+
+    return !s.empty() && it == s.end() && atoi(s.c_str()) >= 0;
+}
 
 /**
  *
@@ -173,18 +188,90 @@ int main(int argc, char *argv[]) {
     std::list<Cab *> cabs;
     std::list<Driver *> drivers;
     char locationserialize[100];
-    int clientDescriptor;
+    int clientDescriptor, i;
     Driver *driver;
     string str;
-    Tcp tcp = Tcp(0, atoi(argv[2]));
-    tcp.initialize();
     char option[2];
     char buffer[1024];
+    char* token;
+    string str2;
+    char* input;
+    int counterTokens;
+    bool checkClient = false;
+
+    //cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
+    //if (cin.fail())
+     //   exit(0);
+
+    checkClient = true;
+    cin >> str2;
+    input = (char *) str2.c_str();
+    //std::count(input.beg, input.end, ",");
+    counterTokens = 0;
+    i = 0;
+    token = strtok(input, ",");
+    while (token != NULL) {
+
+        if ( i ==  0) {
+            std::string str(token);
+            if (!isNumberAndPositive(str)) {
+                checkClient = false;
+                exit(0);
+            } else
+                id = atoi(token);
+
+        } else if ( i == 1) {
+            std::string str(token);
+            if (!isNumberAndPositive(str)) {
+                checkClient = false;
+                exit(0);
+            } else
+                age = atoi(token);
+
+        } else if ( i == 2) {
+            if (token[1] != '\0' || (token[0] != 'M' && token[0] != 'S' && token[0] != 'D' && token[0] != 'W')) {
+                checkClient = false;
+                exit(0);
+            } else
+                maritalStatus = token[0];
+
+        } else if ( i == 3) {
+            std::string str(token);
+            if (!isNumberAndPositive(str)) {
+                checkClient = false;
+                exit(0);
+            } else
+                yoe = atoi(token);
+
+        } else if ( i == 4) {
+            std::string str(token);
+            if (!isNumberAndPositive(str)) {
+                checkClient = false;
+                exit(0);
+            } else
+                cabId = atoi(token);
+
+        } else {
+            checkClient = false;
+            exit(0);
+        }
+
+        i++;
+        counterTokens++;
+        token = strtok(NULL, ",");
+    }
+
+    if ( i != 5)
+        exit(0);
+
+    Tcp tcp = Tcp(0, atoi(argv[2]));
+    tcp.initialize();
+
     tcp.receiveData(option, sizeof(option), clientDescriptor);
     while (option[0] != '7') {
         switch (option[0]) {
             case '1':
-                cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
+                //cin >> id >> dummy >> age >> dummy >> maritalStatus >> dummy >> yoe >> dummy >> cabId;
                 driver = new Driver(id, age, maritalStatus, yoe, cabId);
                 drivers.push_back(driver);
                 str = boost::lexical_cast<string>(id) + "," + boost::lexical_cast<string>(age) + "," +

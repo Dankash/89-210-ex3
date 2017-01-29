@@ -84,7 +84,7 @@ int Grid::getCol() {
 }
 
 bool Grid::isInGrid(int i, int j) {
-    return (i >= 0) && (i < row) && (j >= 0) && (j <= col);
+    return (i >= 0) && (i < row) && (j >= 0) && (j < col);
 }
 
 void Grid::resetGrid() {
