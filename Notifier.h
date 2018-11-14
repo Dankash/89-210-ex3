@@ -1,6 +1,3 @@
-//
-// Created by avi on 30/11/16.
-//
 
 #ifndef ASS1_NOTIFIER_H
 #define ASS1_NOTIFIER_H

@@ -1,4 +1,4 @@
-#blumend2 204326755 gispana 305759383
+
 all: ex3
 
 ex3: BFS.o Grid.o ConnectGrid.o Location.o Point.o Cab.o Driver.o Listener.o LuxuryCab.o Notifier.o Passenger.o StandardCab.o TaxiCenter.o TransportationMap.o Trip.o Neighbors.o Socket.o Tcp.o Udp.o Client.o
